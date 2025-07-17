@@ -227,8 +227,8 @@ const EmailOTPLogin = () => {
     console.log('Google Client ID:', GOOGLE_CLIENT_ID);
     console.log('Redirect URI:', REDIRECT_URI);
     
+    // Test backend connectivity first
     try {
-      // Test backend connectivity first
       console.log('Testing backend connectivity...');
       const healthResponse = await fetch('http://localhost:8080/api/health', {
         method: 'GET',
@@ -239,31 +239,34 @@ const EmailOTPLogin = () => {
       
       console.log('Backend health check status:', healthResponse.status);
       
-      if (healthResponse.ok) {
-        const healthData = await healthResponse.json();
-        console.log('Backend health response:', healthData);
-        
-        if (!healthData.environment?.googleClientIdConfigured) {
-          toast({
-            title: "Configuration Error",
-            description: "Google login is not properly configured on the server. Please check GOOGLE_WEB_CLIENT_ID environment variable.",
-            variant: "destructive",
-          });
-          return;
-        }
+      if (!healthResponse.ok) {
+        throw new Error(`Backend not responding: ${healthResponse.status}`);
       }
       
-      // Proceed with OAuth (even if health check fails, as the endpoint might not exist)
+      const healthData = await healthResponse.json();
+      console.log('Backend health response:', healthData);
+      
+      if (!healthData.environment?.googleClientIdConfigured) {
+        toast({
+          title: "Configuration Error",
+          description: "Google login is not properly configured on the server. Please check GOOGLE_WEB_CLIENT_ID environment variable.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      // Backend is working, proceed with OAuth
       const oauthUrl = getGoogleOAuthUrl();
       console.log('Redirecting to Google OAuth...');
       window.location.href = oauthUrl;
       
     } catch (error) {
       console.error('Backend connectivity error:', error);
-      // Still proceed with OAuth as backend might be working but health endpoint missing
-      const oauthUrl = getGoogleOAuthUrl();
-      console.log('Backend health check failed, but proceeding with OAuth...');
-      window.location.href = oauthUrl;
+      toast({
+        title: "Connection Error",
+        description: "Cannot connect to backend server. Please ensure it's running on port 8080.",
+        variant: "destructive",
+      });
     }
   };
 
