@@ -1,10 +1,12 @@
 
+
+import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "@/contexts/AuthContext";
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import RoleSelectionWithDetails from "./pages/RoleSelectionWithDetails";
 import UserProfileByUsername from "./pages/UserProfileByUsername";
@@ -32,6 +34,13 @@ import PostProject from "@/pages/PostProject";
 import FreelancerProjects from "@/pages/FreelancerProjects";
 import Messages from "@/pages/Messages";
 import ClientOrders from "@/pages/ClientOrders";
+import SidebarLayout from './components/SidebarLayout';
+import Testimonials from './pages/Testimonials';
+import Analytics from './pages/Analytics';
+import Payout from './pages/Payout';
+import Account from './pages/Account';
+import WhatsNew from './pages/WhatsNew';
+import FreelancerOrders from './pages/FreelancerOrders';
 
 const queryClient = new QueryClient();
 
@@ -109,12 +118,14 @@ const App = () => (
                 path="/messaging"
                 element={
                   <ProtectedRoute>
-                    <Messages />
+                    <SidebarLayout>
+                      <Messages />
+                    </SidebarLayout>
                   </ProtectedRoute>
                 }
               />
 
-              {/* Dashboard Routes - Updated to work properly */}
+              {/* Dashboard Routes */}
               <Route
                 path="/dashboard"
                 element={
@@ -124,12 +135,14 @@ const App = () => (
                 }
               />
 
-              {/* Freelancer Routes */}
+              {/* Freelancer Routes with Sidebar */}
               <Route
                 path="/freelancer/dashboard"
                 element={
                   <ProtectedRoute requiredRole="freelancer">
-                    <FreelancerDashboard />
+                    <SidebarLayout>
+                      <FreelancerDashboard />
+                    </SidebarLayout>
                   </ProtectedRoute>
                 }
               />
@@ -137,7 +150,9 @@ const App = () => (
                 path="/dashboard/freelancer"
                 element={
                   <ProtectedRoute requiredRole="freelancer">
-                    <FreelancerDashboard />
+                    <SidebarLayout>
+                      <FreelancerDashboard />
+                    </SidebarLayout>
                   </ProtectedRoute>
                 }
               />
@@ -145,7 +160,9 @@ const App = () => (
                 path="/freelancer/orders"
                 element={
                   <ProtectedRoute requiredRole="freelancer">
-                    <FreelancerOrderDashboard />
+                    <SidebarLayout>
+                      <FreelancerOrders />
+                    </SidebarLayout>
                   </ProtectedRoute>
                 }
               />
@@ -153,7 +170,9 @@ const App = () => (
                 path="/create-service"
                 element={
                   <ProtectedRoute requiredRole="freelancer">
-                    <CreateService />
+                    <SidebarLayout>
+                      <CreateService />
+                    </SidebarLayout>
                   </ProtectedRoute>
                 }
               />
@@ -161,7 +180,9 @@ const App = () => (
                 path="/my-services"
                 element={
                   <ProtectedRoute requiredRole="freelancer">
-                    <MyServices />
+                    <SidebarLayout>
+                      <MyServices />
+                    </SidebarLayout>
                   </ProtectedRoute>
                 }
               />
@@ -169,7 +190,9 @@ const App = () => (
                 path="/post-project"
                 element={
                   <ProtectedRoute requiredRole="freelancer">
-                    <PostProject />
+                    <SidebarLayout>
+                      <PostProject />
+                    </SidebarLayout>
                   </ProtectedRoute>
                 }
               />
@@ -177,17 +200,21 @@ const App = () => (
                 path="/freelancer-projects"
                 element={
                   <ProtectedRoute requiredRole="freelancer">
-                    <FreelancerProjects />
+                    <SidebarLayout>
+                      <FreelancerProjects />
+                    </SidebarLayout>
                   </ProtectedRoute>
                 }
               />
 
-              {/* Client Routes */}
+              {/* Client Routes with Sidebar */}
               <Route
                 path="/client/dashboard"
                 element={
                   <ProtectedRoute requiredRole="client">
-                    <ClientDashboard />
+                    <SidebarLayout>
+                      <ClientDashboard />
+                    </SidebarLayout>
                   </ProtectedRoute>
                 }
               />
@@ -195,7 +222,9 @@ const App = () => (
                 path="/dashboard/client"
                 element={
                   <ProtectedRoute requiredRole="client">
-                    <ClientDashboard />
+                    <SidebarLayout>
+                      <ClientDashboard />
+                    </SidebarLayout>
                   </ProtectedRoute>
                 }
               />
@@ -203,7 +232,61 @@ const App = () => (
                 path="/client/orders"
                 element={
                   <ProtectedRoute requiredRole="client">
-                    <ClientOrders />
+                    <SidebarLayout>
+                      <ClientOrders />
+                    </SidebarLayout>
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Sidebar Menu Routes */}
+              <Route
+                path="/testimonials"
+                element={
+                  <ProtectedRoute>
+                    <SidebarLayout>
+                      <Testimonials />
+                    </SidebarLayout>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/analytics"
+                element={
+                  <ProtectedRoute>
+                    <SidebarLayout>
+                      <Analytics />
+                    </SidebarLayout>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/payout"
+                element={
+                  <ProtectedRoute>
+                    <SidebarLayout>
+                      <Payout />
+                    </SidebarLayout>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/account"
+                element={
+                  <ProtectedRoute>
+                    <SidebarLayout>
+                      <Account />
+                    </SidebarLayout>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/whats-new"
+                element={
+                  <ProtectedRoute>
+                    <SidebarLayout>
+                      <WhatsNew />
+                    </SidebarLayout>
                   </ProtectedRoute>
                 }
               />
