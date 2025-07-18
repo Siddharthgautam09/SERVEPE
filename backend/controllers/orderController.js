@@ -508,7 +508,7 @@ exports.getOrderAnalytics = async (req, res) => {
     const totalEarnings = await Order.aggregate([
       {
         $match: {
-          freelancer: mongoose.Types.ObjectId(freelancerId),
+          freelancer: new mongoose.Types.ObjectId(freelancerId),
           status: 'completed'
         }
       },
@@ -523,7 +523,7 @@ exports.getOrderAnalytics = async (req, res) => {
     const avgDeliveryTime = await Order.aggregate([
       {
         $match: {
-          freelancer: mongoose.Types.ObjectId(freelancerId),
+          freelancer: new mongoose.Types.ObjectId(freelancerId),
           status: 'completed',
           actualDeliveryDate: { $exists: true }
         }

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { orderAPI } from '@/api/orders';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -24,62 +25,162 @@ import {
   Eye, 
   Star, 
   ShoppingCart,
-  Calendar
+  Calendar,
+  Loader2
 } from 'lucide-react';
 
 const Analytics = () => {
   const { user } = useAuth();
   const [analytics, setAnalytics] = useState({
-    profileViews: 245,
-    totalEarnings: 12500,
-    activeOrders: 8,
-    completedOrders: 32,
-    averageRating: 4.8,
-    responseTime: '2 hours'
+    totalOrders: 0,
+    completedOrders: 0,
+    totalEarnings: 0,
+    completionRate: 0,
+    avgDeliveryTime: 0,
+    recentOrdersCount: 0
   });
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const [monthlyData] = useState([
-    { month: 'Jan', earnings: 2400, orders: 5, views: 45 },
-    { month: 'Feb', earnings: 3200, orders: 7, views: 52 },
-    { month: 'Mar', earnings: 2800, orders: 6, views: 48 },
-    { month: 'Apr', earnings: 4100, orders: 9, views: 67 },
-    { month: 'May', earnings: 3600, orders: 8, views: 59 },
-    { month: 'Jun', earnings: 5200, orders: 12, views: 78 }
-  ]);
+  // Fetch analytics data
+  useEffect(() => {
+    const fetchAnalytics = async () => {
+      try {
+        setLoading(true);
+        
+        if (user?.role === 'freelancer') {
+          // Fetch order analytics for freelancers
+          const analyticsResponse = await orderAPI.getOrderAnalytics();
+          if (analyticsResponse.success) {
+            setAnalytics(analyticsResponse.data);
+          }
+        }
 
-  const [serviceData] = useState([
-    { name: 'Web Development', value: 45, color: '#3b82f6' },
-    { name: 'Mobile Apps', value: 30, color: '#10b981' },
-    { name: 'UI/UX Design', value: 25, color: '#f59e0b' }
-  ]);
+        // Fetch orders for additional data
+        const ordersResponse = await orderAPI.getMyOrders({ limit: 50 });
+        if (ordersResponse.success) {
+          setOrders(ordersResponse.data);
+        }
+      } catch (err) {
+        setError(err.message);
+        console.error('Error fetching analytics:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user) {
+      fetchAnalytics();
+    }
+  }, [user]);
+
+  // Calculate monthly data from orders
+  const monthlyData = React.useMemo(() => {
+    if (!orders.length) return [];
+    
+    const last6Months = [];
+    const now = new Date();
+    
+    for (let i = 5; i >= 0; i--) {
+      const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const monthName = date.toLocaleDateString('en-US', { month: 'short' });
+      const monthStart = new Date(date.getFullYear(), date.getMonth(), 1);
+      const monthEnd = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+      
+      const monthOrders = orders.filter(order => {
+        const orderDate = new Date(order.createdAt);
+        return orderDate >= monthStart && orderDate <= monthEnd;
+      });
+      
+      const monthEarnings = monthOrders
+        .filter(order => order.status === 'completed')
+        .reduce((sum, order) => sum + (order.freelancerEarnings || 0), 0);
+      
+      last6Months.push({
+        month: monthName,
+        earnings: monthEarnings,
+        orders: monthOrders.length,
+        completed: monthOrders.filter(order => order.status === 'completed').length
+      });
+    }
+    
+    return last6Months;
+  }, [orders]);
+
+  // Calculate service breakdown from orders
+  const serviceData = React.useMemo(() => {
+    if (!orders.length) return [];
+    
+    const serviceStats: Record<string, number> = {};
+    orders.forEach((order: any) => {
+      if (order.service?.title) {
+        const category = order.service.category || 'Other';
+        serviceStats[category] = (serviceStats[category] || 0) + 1;
+      }
+    });
+    
+    const total = Object.values(serviceStats).reduce((sum: number, count: number) => sum + count, 0);
+    const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+    
+    return Object.entries(serviceStats).map(([name, count], index) => ({
+      name,
+      value: total > 0 ? Math.round((count / total) * 100) : 0,
+      color: colors[index % colors.length]
+    }));
+  }, [orders]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-destructive mb-4">Error loading analytics: {error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-md"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const stats = [
     {
       title: "Total Earnings",
       value: `₹${analytics.totalEarnings.toLocaleString()}`,
       icon: DollarSign,
-      change: "+12%",
+      change: `${analytics.recentOrdersCount} recent`,
       changeType: "positive"
     },
     {
-      title: "Profile Views",
-      value: analytics.profileViews.toString(),
-      icon: Eye,
-      change: "+8%",
+      title: "Total Orders",
+      value: analytics.totalOrders.toString(),
+      icon: ShoppingCart,
+      change: `${analytics.completedOrders} completed`,
+      changeType: "positive"
+    },
+    {
+      title: "Completion Rate",
+      value: `${analytics.completionRate}%`,
+      icon: TrendingUp,
+      change: `${analytics.avgDeliveryTime.toFixed(1)} avg days`,
       changeType: "positive"
     },
     {
       title: "Active Orders",
-      value: analytics.activeOrders.toString(),
-      icon: ShoppingCart,
-      change: "+3",
-      changeType: "positive"
-    },
-    {
-      title: "Average Rating",
-      value: analytics.averageRating.toString(),
-      icon: Star,
-      change: "+0.2",
+      value: (analytics.totalOrders - analytics.completedOrders).toString(),
+      icon: Calendar,
+      change: "In progress",
       changeType: "positive"
     }
   ];
@@ -250,16 +351,16 @@ const Analytics = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex justify-between items-center">
-                <span className="text-sm font-medium">Response Time</span>
-                <Badge variant="outline">{analytics.responseTime}</Badge>
+                <span className="text-sm font-medium">Avg Delivery Time</span>
+                <Badge variant="outline">{analytics.avgDeliveryTime.toFixed(1)} days</Badge>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium">Completion Rate</span>
-                <Badge variant="outline">98%</Badge>
+                <Badge variant="outline">{analytics.completionRate}%</Badge>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm font-medium">Client Retention</span>
-                <Badge variant="outline">85%</Badge>
+                <span className="text-sm font-medium">Recent Orders</span>
+                <Badge variant="outline">{analytics.recentOrdersCount}</Badge>
               </div>
             </CardContent>
           </Card>
@@ -269,18 +370,20 @@ const Analytics = () => {
               <CardTitle>Recent Activity</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center space-x-3">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm">New order received - Web Development</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <Star className="h-4 w-4 text-yellow-400" />
-                <span className="text-sm">5-star review from John Doe</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <Users className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm">Profile viewed 12 times today</span>
-              </div>
+              {orders.slice(0, 3).map((order, index) => (
+                <div key={index} className="flex items-center space-x-3">
+                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm">
+                    Order #{order.orderNumber} - {order.status} - {order.service?.title}
+                  </span>
+                </div>
+              ))}
+              {orders.length === 0 && (
+                <div className="flex items-center space-x-3">
+                  <Users className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm">No recent activity</span>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
