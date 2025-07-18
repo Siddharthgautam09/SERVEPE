@@ -5,42 +5,60 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Star, MessageSquare, User } from 'lucide-react';
+import { reviewAPI } from '@/api/reviews';
 
 const Testimonials = () => {
   const { user } = useAuth();
   const [testimonials, setTestimonials] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    averageRating: 0,
+    totalReviews: 0,
+    happyClients: 0
+  });
 
   useEffect(() => {
-    loadTestimonials();
-  }, []);
+    if (user?._id) {
+      loadTestimonials();
+    }
+  }, [user]);
 
   const loadTestimonials = async () => {
+    if (!user?._id) return;
+    
     try {
-      // Mock data for now - replace with actual API call
-      const mockTestimonials = [
-        {
-          id: 1,
-          clientName: "John Doe",
-          clientAvatar: "",
-          rating: 5,
-          comment: "Excellent work! Very professional and delivered on time.",
-          serviceName: "Website Development",
-          date: "2024-01-15"
-        },
-        {
-          id: 2,
-          clientName: "Sarah Smith",
-          clientAvatar: "",
-          rating: 4,
-          comment: "Great communication and quality work.",
-          serviceName: "Logo Design",
-          date: "2024-01-10"
-        }
-      ];
-      setTestimonials(mockTestimonials);
+      setLoading(true);
+      
+      // Fetch reviews for the current freelancer
+      const response = await reviewAPI.getFreelancerReviews(user._id);
+      
+      if (response.success && response.data) {
+        const { reviews, stats: reviewStats } = response.data;
+        
+        // Transform reviews to match the expected format
+        const transformedReviews = reviews?.map((review: any) => ({
+          id: review._id,
+          clientName: review.client?.name || review.client?.username || 'Anonymous',
+          clientAvatar: review.client?.profilePicture || '',
+          rating: review.rating,
+          comment: review.comment || '',
+          serviceName: review.service?.title || 'Service',
+          date: review.createdAt,
+          freelancerResponse: review.freelancerResponse
+        })) || [];
+        
+        setTestimonials(transformedReviews);
+        
+        // Set stats from backend response
+        setStats({
+          averageRating: reviewStats?.averageRating || 0,
+          totalReviews: reviewStats?.totalReviews || 0,
+          happyClients: reviews?.length || 0
+        });
+      }
     } catch (error) {
       console.error('Failed to load testimonials:', error);
+      setTestimonials([]);
     } finally {
       setLoading(false);
     }
@@ -85,7 +103,9 @@ const Testimonials = () => {
               <div className="flex items-center space-x-2">
                 <Star className="h-5 w-5 text-yellow-400" />
                 <div>
-                  <p className="text-2xl font-bold">4.8</p>
+                  <p className="text-2xl font-bold">
+                    {stats.averageRating > 0 ? stats.averageRating.toFixed(1) : '0.0'}
+                  </p>
                   <p className="text-sm text-muted-foreground">Average Rating</p>
                 </div>
               </div>
@@ -97,7 +117,7 @@ const Testimonials = () => {
               <div className="flex items-center space-x-2">
                 <MessageSquare className="h-5 w-5 text-blue-500" />
                 <div>
-                  <p className="text-2xl font-bold">{testimonials.length}</p>
+                  <p className="text-2xl font-bold">{stats.totalReviews}</p>
                   <p className="text-sm text-muted-foreground">Total Reviews</p>
                 </div>
               </div>
@@ -109,7 +129,7 @@ const Testimonials = () => {
               <div className="flex items-center space-x-2">
                 <User className="h-5 w-5 text-green-500" />
                 <div>
-                  <p className="text-2xl font-bold">{testimonials.length}</p>
+                  <p className="text-2xl font-bold">{stats.happyClients}</p>
                   <p className="text-sm text-muted-foreground">Happy Clients</p>
                 </div>
               </div>
@@ -158,6 +178,13 @@ const Testimonials = () => {
                     </div>
                     
                     <p className="text-foreground">{testimonial.comment}</p>
+                    
+                    {testimonial.freelancerResponse && (
+                      <div className="bg-muted rounded-lg p-4 mt-3">
+                        <p className="text-sm font-medium text-foreground mb-1">Your Response:</p>
+                        <p className="text-sm text-muted-foreground">{testimonial.freelancerResponse}</p>
+                      </div>
+                    )}
                     
                     <p className="text-sm text-muted-foreground">
                       {new Date(testimonial.date).toLocaleDateString()}

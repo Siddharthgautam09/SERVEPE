@@ -44,7 +44,7 @@ exports.getUserByUsername = async (req, res) => {
     const user = await User.findOne({ 
       username: username.toLowerCase(),
       isActive: true 
-    }).select('-password -email -phoneNumber -whatsappNumber');
+    }).select('-password -email -phoneNumber -whatsappNumber'); // skills is NOT excluded, so it will be included
 
     if (!user) {
       return res.status(404).json({

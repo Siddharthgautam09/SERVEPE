@@ -164,6 +164,9 @@ const UserProfileByUsername = () => {
     if (user.socialLinks.github) socialLinks.push({ type: 'github', url: user.socialLinks.github });
   }
 
+  // Choose skills if present, otherwise expertise
+  const skillsToShow = (user.skills && user.skills.length > 0) ? user.skills : (user.expertise || []);
+
   return (
     <div className="w-full flex flex-col min-h-screen bg-gray-50">
       {/* Header */}
@@ -179,116 +182,79 @@ const UserProfileByUsername = () => {
 
       <div className="px-[156px] w-full mt-[118px] flex flex-col">
         {/* Main Profile Card */}
-        <div className="text-[#3A3A3A] border-[#EDEDED] rounded-[18px] w-[400px] border-[0.5px] shadow-[0px_0px_4px_0px_#0000000A] bg-white">
-          <div className="flex flex-col gap-[16.69px] pl-[40.4px] pr-[37.46px]">
-            <div className="flex">
+        <div className="flex flex-col items-center w-full mt-[40px]">
+          <div className="bg-white rounded-[18px] border border-[#EDEDED] shadow-[0px_0px_4px_0px_#0000000A] w-full max-w-[400px] p-0 flex flex-col items-center relative">
+            {/* Profile Image */}
+            <div className="flex flex-col items-center w-full pt-[-60px]">
               <img
                 src={user.profilePicture || "/images/profile/default.png"}
                 alt="Profile"
-                className="w-[120px] h-[120px] mt-[-60px] rounded-full object-cover border-4 border-white shadow-lg"
+                className="w-[120px] h-[120px] rounded-full object-cover border-4 border-white shadow-lg -mt-14"
               />
-
-              <div className="flex items-center ml-[27.4px] justify-between w-full max-w-xs">
-                {/* Rating and Review Count */}
-                <div className="flex flex-col items-center space-x-2">
-                  <div className="flex items-center space-x-1">
-                    <Star className="w-4 h-4 fill-red-500 text-red-500" />
-                    <span className="font-[700] text-[#1D1C22] text-sm">
-                      {user.rating?.average?.toFixed(1) || '0.0'}
-                    </span>
-                  </div>
-                  <span className="underline text-[12px] text-[#1D1C22] cursor-pointer">
-                    {user.rating?.count || '0'} review{(user.rating?.count || 0) !== 1 ? 's' : ''}
-                  </span>
-                </div>
-
-                {/* Bookmark Icon */}
-                <Bookmark className="w-[22px] cursor-pointer h-[22px] text-gray-800 hover:fill-gray-800" />
-              </div>
             </div>
-
-            <div className="flex flex-col h-full">
-              <h1 className="opacity-100 font-semibold text-[18px]">
-                {user.firstName} {user.lastName}
-              </h1>
-              <p className="text-[15px] font-normal mt-[8px] text-[#3A3A3A]">
+            {/* Rating and Bookmark */}
+            <div className="flex items-center justify-between w-full px-8 mt-2">
+              <div className="flex flex-col items-center">
+                <div className="flex items-center space-x-1">
+                  <Star className="w-4 h-4 fill-red-500 text-red-500" />
+                  <span className="font-bold text-[#1D1C22] text-sm">{user.rating?.average?.toFixed(1) || '0.0'}</span>
+                </div>
+                <span className="underline text-[12px] text-[#1D1C22] cursor-pointer">{user.rating?.count || '0'} review{(user.rating?.count || 0) !== 1 ? 's' : ''}</span>
+              </div>
+              <Bookmark className="w-[22px] h-[22px] text-gray-800 cursor-pointer hover:fill-gray-800" />
+            </div>
+            {/* Name and Title */}
+            <div className="flex flex-col items-center w-full px-8 mt-2">
+              <h1 className="font-semibold text-[18px] text-center">{user.firstName} {user.lastName}</h1>
+              <p className="text-[15px] font-normal mt-1 text-[#3A3A3A] text-center">
                 {user.title || user.tagline || `${user.role} on Servpe`}
-                {user.companyBrand && ` • ${user.companyBrand}`}
-                {user.bio && ` | ${user.bio}`}
               </p>
+              {/* Username/Servpe Page Link */}
+              {user.username && (
+                <span className="text-[13px] text-blue-600 mt-1">servpe.com/{user.username}</span>
+              )}
             </div>
-
-            {/* Profile Items Section */}
-            {profileItems.length > 0 && (
-              <section className="w-[322.12px]">
-                <div className="border-t border-dashed border-[#A4A4A4] border-[1px]" />
-
-                <div className="flex justify-between items-center px-[10px] py-[5px]">
-                  {profileItems.map((item) => (
-                    <div key={item.key} className="flex items-center space-x-1">
-                      {/* Gradient circle */}
-                      <div
-                        className="w-[20px] h-[20px] rounded-full border border-[#A4A4A4] flex items-center justify-center"
-                        style={{
-                          background: "linear-gradient(135deg, #656565 0%, #A4A4A4 100%)",
-                        }}
-                      >
-                        {getProfileIcon(item.type)}
-                      </div>
-
-                      {/* Text */}
-                      <span
-                        className="text-[12px] text-black font-normal"
-                        style={{
-                          lineHeight: "100%",
-                          letterSpacing: "0%",
-                        }}
-                      >
-                        {item.text}
-                      </span>
-                    </div>
-                  ))}
+            {/* Profile Items: Experience, Company, Location */}
+            <div className="flex justify-center items-center gap-4 w-full mt-3">
+              {user.totalExperienceYears && (
+                <div className="flex items-center gap-1 text-[12px] text-[#3A3A3A]">
+                  <Clock className="w-4 h-4 text-[#A4A4A4]" />
+                  {user.totalExperienceYears}+ Years
                 </div>
-
-                <div className="border-t border-dashed border-[#A4A4A4] border-[1px]" />
-              </section>
-            )}
-
-            {/* Skills/Expertise Section */}
-            <section className="w-[323px]">
-              <div className="flex flex-wrap font-medium">
-                <div className="flex flex-wrap items-center gap-[4px]">
-                  <span className="font-[500] py-1 text-[14px] text-[#3A3A3A]">
-                    Expertise
-                  </span>
-                  {(user.expertise || user.skills || []).slice(0, 6).map((skill: any, idx: number) => (
-                    <div
-                      key={idx}
-                      className="px-2 py-[4px] text-[13px] text-[#000000] rounded-sm"
-                      style={{
-                        fontWeight: 400,
-                        lineHeight: "100%",
-                        backgroundColor: "#F8F8F8",
-                        border: "0.4px solid #E7E7E7",
-                      }}
-                    >
-                      {typeof skill === 'string' ? skill : skill.name}
-                    </div>
-                  ))}
+              )}
+              {user.companyBrand && (
+                <div className="flex items-center gap-1 text-[12px] text-[#3A3A3A]">
+                  <div className="w-4 h-4 bg-[#A4A4A4] rounded-sm flex items-center justify-center text-white text-[10px] font-bold">S</div>
+                  {user.companyBrand}
                 </div>
-              </div>
-            </section>
-
+              )}
+              {user.location && (
+                <div className="flex items-center gap-1 text-[12px] text-[#3A3A3A]">
+                  <MapPin className="w-4 h-4 text-[#A4A4A4]" />
+                  {typeof user.location === 'string' ? user.location : `${user.location?.city || ''}${user.location?.city && user.location?.country ? ', ' : ''}${user.location?.country || ''}`}
+                </div>
+              )}
+            </div>
+            {/* Skills/Tags */}
+            <div className="flex flex-wrap items-center gap-2 justify-center w-full mt-3 px-8">
+              {skillsToShow.slice(0, 12).map((skill: any, idx: number) => (
+                <div
+                  key={idx}
+                  className="px-2 py-1 text-[13px] text-[#000000] rounded-sm bg-[#F8F8F8] border border-[#E7E7E7]"
+                  style={{ fontWeight: 400, lineHeight: '100%' }}
+                >
+                  {typeof skill === 'string' ? skill : skill.name}
+                </div>
+              ))}
+            </div>
             {/* Bio Section */}
-            <section className="w-[323px] pb-[47.6px]">
-              <p className="text-[15px] font-[400] text-black">
+            <div className="w-full px-8 mt-3 mb-4">
+              <h2 className="text-[14px] font-semibold text-gray-700 mb-1">About</h2>
+              <p className="text-[15px] font-normal text-black text-left">
                 {user.bio ? (
                   user.bio.length > 150 ? (
                     <>
-                      {user.bio.substring(0, 150)}...{" "}
-                      <span className="text-[#074BEC] cursor-pointer font-[500]">
-                        Read more
-                      </span>
+                      {user.bio.substring(0, 150)}... <span className="text-[#074BEC] cursor-pointer font-medium">Read more</span>
                     </>
                   ) : (
                     user.bio
@@ -297,167 +263,76 @@ const UserProfileByUsername = () => {
                   `Professional ${user.role} on Servpe platform.`
                 )}
               </p>
-            </section>
-          </div>
-        </div>
-
-        {/* Joined Date and Social Links */}
-        <div className="border-[0.5px] shadow-[0px_0px_4px_0px_#0000000A] mt-[25px] flex items-center mb-[20px] text-[#3A3A3A] border-[#EDEDED] rounded-[18px] h-[80px] w-[400px] bg-white">
-          <section className="flex pl-[40px] items-center w-full">
-            {/* Joined On Text */}
-            <div className="flex flex-col">
-              <span
-                className="text-[11px] text-gray-500 uppercase tracking-wider"
-                style={{
-                  fontWeight: 300,
-                  lineHeight: "100%",
-                  letterSpacing: "3%",
-                }}
-              >
-                JOINED ON
-              </span>
-              <span
-                className="text-[12px] text-gray-700 font-medium"
-                style={{
-                  fontWeight: 400,
-                  lineHeight: "100%",
-                }}
-              >
-                {new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
-              </span>
             </div>
-
-            {/* Social Icons */}
-            {socialLinks.length > 0 && (
-              <div className="flex items-center justify-between ml-[31px] space-x-[12px]">
-                {socialLinks.map((social, idx) => (
-                  <a
-                    key={idx}
-                    href={social.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-[25px] cursor-pointer h-[25px] rounded-full flex items-center justify-center border hover:scale-110 transition-transform"
-                    style={{
-                      background: "linear-gradient(180deg, #656565 0%, #A4A4A4 100%)",
-                      borderColor: "#A4A4A4",
-                      borderWidth: "0.5px",
-                    }}
-                  >
-                    {getSocialIcon(social.type)}
-                  </a>
+            {/* Contact Section */}
+            <div className="w-full px-8 mb-4">
+              <h2 className="text-[14px] font-semibold text-gray-700 mb-1">Contact</h2>
+              <div className="flex flex-col gap-1 text-[13px] text-gray-800">
+                {user.email && <span><b>Email:</b> {user.email}</span>}
+                {user.whatsappNumber && <span><b>WhatsApp:</b> {user.whatsappNumber}</span>}
+              </div>
+            </div>
+            {/* Social Links Section (all) */}
+            <div className="w-full px-8 mb-4">
+              <h2 className="text-[14px] font-semibold text-gray-700 mb-1">Social Links</h2>
+              <div className="flex flex-wrap gap-2">
+                {user.socialLinks && Object.entries(user.socialLinks).map(([platform, url]: [string, string]) => (
+                  url && (
+                    <a
+                      key={platform}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-[25px] h-[25px] rounded-full flex items-center justify-center border border-[#A4A4A4] bg-gradient-to-b from-[#656565] to-[#A4A4A4] hover:scale-110 transition-transform"
+                      title={platform.charAt(0).toUpperCase() + platform.slice(1)}
+                    >
+                      {getSocialIcon(platform)}
+                    </a>
+                  )
                 ))}
               </div>
-            )}
-          </section>
-        </div>
-
-        {/* Consultation Section - Only for freelancers with hourly rate */}
-        {user.hourlyRate && (
-          <div className="flex-col border-[0.5px] shadow-[0px_0px_4px_0px_#0000000A] flex items-center pt-[22px] pb-[25px] text-[#3A3A3A] border-[#EDEDED] rounded-[18px] w-[400px] pl-[40px] bg-white">
-            <section className="flex flex-col w-fit">
-              {/* Top badges row */}
-              <div className="flex items-center space-x-[12px]">
-                {/* Rating Box */}
-                <div className="flex items-center justify-center w-[55px] h-[30px] rounded-[18px] bg-[#F1F1F1] space-x-1">
-                  <Star className="w-[15px] h-[15px] fill-[#3E3E3E] text-[#3E3E3E]" />
-                  <span
-                    className="text-[14px] font-bold"
-                    style={{
-                      color: "#3E3E3E",
-                      lineHeight: "100%",
-                    }}
-                  >
-                    {user.rating?.average?.toFixed(1) || '4.8'}
-                  </span>
-                </div>
-
-                {/* Popular Box */}
-                <div className="w-[81.38px] h-[30px] rounded-[18px] bg-[#E4EFFF] flex items-center justify-center ml-[0px]">
-                  <span
-                    className="text-[14px] font-medium"
-                    style={{
-                      color: "#074BEC",
-                      lineHeight: "100%",
-                    }}
-                  >
-                    Popular
-                  </span>
-                </div>
-              </div>
-
-              {/* Text Block */}
-              <div className="mt-[18px]">
-                <p
-                  className="text-[21px] font-semibold text-[#3E3E3E]"
-                  style={{
-                    lineHeight: "120%",
-                  }}
-                >
-                  Need help? want to talk with me book the consultation call now
-                </p>
-
-                <p
-                  className="text-[16px] font-normal text-[#696D75] mt-[13px]"
-                  style={{
-                    lineHeight: "100%",
-                  }}
-                >
-                  Not sure about the quality?
-                </p>
-              </div>
-            </section>
-
-            <div className="flex items-center w-full mt-[27.5px] justify-between px-[13.9px] py-2 bg-[#F1F1F1] rounded-[15px]">
-              {/* Left Section: Calendar + Text */}
-              <div className="flex items-center gap-[10px] pr-[19px]">
-                {/* Calendar Icon */}
-                <Clock className="w-[28px] h-[28px] text-[#ADADAD]" />
-
-                {/* Texts */}
-                <div className="flex flex-col">
-                  <span className="font-medium text-[16px] text-[#3E3E3E] leading-none">
-                    30 mins
-                  </span>
-                  <span className="text-[11px] mt-[1px] font-normal text-[#565656] leading-none">
-                    Video Meeting
-                  </span>
-                </div>
-              </div>
-
-              {/* Right Section: Price Button */}
-              <button
-                className="flex items-center justify-center w-[135px] h-[36px] border border-[#3E3E3E] rounded-[54.23px] bg-[#F1F1F1] cursor-pointer hover:bg-[#E4E4E4] transition-colors duration-200 ease-in-out"
-                style={{ marginRight: "13.9px" }}
-              >
-                {/* ₹2,300 (strikethrough) */}
-                <span className="text-[13px] mr-[5.39px] text-[#696D75] line-through">
-                  ₹{(user.hourlyRate * 2).toLocaleString()}
-                </span>
-
-                {/* ₹1,100 */}
-                <span className="text-[16px] text-[#3E3E3E] font-medium">
-                  ₹{user.hourlyRate.toLocaleString()}
-                </span>
-
-                {/* Arrow Icon */}
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="#3E3E3E"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="ml-1"
-                >
-                  <line x1="5" y1="12" x2="19" y2="12" />
-                  <polyline points="12 5 19 12 12 19" />
-                </svg>
-              </button>
             </div>
           </div>
-        )}
+          {/* Joined Date */}
+          <div className="bg-white rounded-[18px] border border-[#EDEDED] shadow-[0px_0px_4px_0px_#0000000A] w-full max-w-[400px] mt-6 flex items-center h-[80px] px-8">
+            <div className="flex flex-col">
+              <span className="text-[11px] text-gray-500 uppercase tracking-wider font-light">JOINED ON</span>
+              <span className="text-[12px] text-gray-700 font-medium">{new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
+            </div>
+          </div>
+          {/* Consultation Section */}
+          {user.hourlyRate && (
+            <div className="bg-white rounded-[18px] border border-[#EDEDED] shadow-[0px_0px_4px_0px_#0000000A] w-full max-w-[400px] mt-6 flex flex-col items-center pt-6 pb-6 px-8">
+              <div className="flex items-center w-full mb-4">
+                <div className="flex items-center justify-center w-[55px] h-[30px] rounded-[18px] bg-[#F1F1F1] space-x-1">
+                  <Star className="w-[15px] h-[15px] fill-[#3E3E3E] text-[#3E3E3E]" />
+                  <span className="text-[14px] font-bold text-[#3E3E3E]">{user.rating?.average?.toFixed(1) || '4.8'}</span>
+                </div>
+                <div className="w-[81.38px] h-[30px] rounded-[18px] bg-[#E4EFFF] flex items-center justify-center ml-3">
+                  <span className="text-[14px] font-medium text-[#074BEC]">Popular</span>
+                </div>
+              </div>
+              <div className="w-full">
+                <p className="text-[21px] font-semibold text-[#3E3E3E] leading-[120%]">Need help? want to talk with me book the consultation call now</p>
+                <p className="text-[16px] font-normal text-[#696D75] mt-3 leading-[100%]">Not sure about the quality?</p>
+              </div>
+              <div className="flex items-center w-full mt-6 justify-between bg-[#F1F1F1] rounded-[15px] px-4 py-2">
+                <div className="flex items-center gap-2">
+                  <Clock className="w-[28px] h-[28px] text-[#ADADAD]" />
+                  <div className="flex flex-col">
+                    <span className="font-medium text-[16px] text-[#3E3E3E] leading-none">30 mins</span>
+                    <span className="text-[11px] mt-[1px] font-normal text-[#565656] leading-none">Video Meeting</span>
+                  </div>
+                </div>
+                <button className="flex items-center justify-center w-[135px] h-[36px] border border-[#3E3E3E] rounded-[54.23px] bg-[#F1F1F1] cursor-pointer hover:bg-[#E4E4E4] transition-colors duration-200 ease-in-out">
+                  <span className="text-[13px] mr-2 text-[#696D75] line-through">₹{(user.hourlyRate * 2).toLocaleString()}</span>
+                  <span className="text-[16px] text-[#3E3E3E] font-medium">₹{user.hourlyRate.toLocaleString()}</span>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3E3E3E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ml-1"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

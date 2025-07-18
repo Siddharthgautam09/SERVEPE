@@ -100,11 +100,11 @@ const SidebarLayout: React.FC<SidebarLayoutProps> = ({ children }) => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="h-screen bg-background flex overflow-hidden">
       {/* Sidebar */}
-      <div className="w-64 bg-card border-r border-border flex flex-col">
+      <div className="w-64 bg-card border-r border-border flex flex-col h-full">
         {/* Header */}
-        <div className="p-6 border-b border-border">
+        <div className="p-6 border-b border-border flex-shrink-0">
           <div className="flex items-center space-x-3">
             <Avatar className="h-10 w-10">
               <AvatarImage src={user?.profilePicture} />
@@ -124,7 +124,7 @@ const SidebarLayout: React.FC<SidebarLayoutProps> = ({ children }) => {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 p-4 space-y-2">
+        <nav className="flex-1 p-4 space-y-2 overflow-hidden">
           {sidebarItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.path);
@@ -152,7 +152,7 @@ const SidebarLayout: React.FC<SidebarLayoutProps> = ({ children }) => {
         </nav>
 
         {/* Footer */}
-        <div className="p-4 border-t border-border">
+        <div className="p-4 border-t border-border flex-shrink-0">
           <div className="text-xs text-muted-foreground text-center">
             Servpe © 2024
           </div>
@@ -160,7 +160,7 @@ const SidebarLayout: React.FC<SidebarLayoutProps> = ({ children }) => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 h-full overflow-auto">
         {children}
       </div>
     </div>
