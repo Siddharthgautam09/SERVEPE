@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Eye, MessageCircle, Clock, Upload } from 'lucide-react';
+import { Search, Eye, MessageCircle, Clock, Upload, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -164,7 +164,7 @@ const FreelancerOrders = () => {
   // Show chat interface
   if (showChat && selectedClient && currentOrderId) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gradient-to-br from-[#f8fafc] to-[#f1f5f9]">
         <Navbar />
         <div className="max-w-6xl mx-auto px-4 py-8">
           <Button 
@@ -188,8 +188,8 @@ const FreelancerOrders = () => {
   // Show order detail
   if (showOrderDetail && selectedOrder) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <Navbar />
+      <div className="min-h-screen bg-gradient-to-br from-[#f8fafc] to-[#f1f5f9]">
+        {/* <Navbar /> */}
         <div className="max-w-6xl mx-auto px-4 py-8">
           <div className="mb-6">
             <Button 
@@ -210,106 +210,99 @@ const FreelancerOrders = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar />
-      
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">My Orders</h1>
-            <p className="text-gray-600 mt-2">Manage your freelance orders</p>
+    <div className="min-h-screen bg-gradient-to-br from-[#f8fafc] to-[#f1f5f9]">
+      {/* <Navbar /> */}
+      {/* Header */}
+      <header className="bg-gradient-to-r from-purple-600 to-pink-500 py-12 shadow-md rounded-b-3xl mb-8">
+        <div className="max-w-6xl mx-auto px-4 flex flex-col items-center justify-center text-center">
+          <div className="flex items-center justify-center mb-4">
+            <Sparkles className="w-10 h-10 text-white mr-2" />
+            <h1 className="text-4xl md:text-5xl font-extrabold text-white tracking-tight">My Orders</h1>
           </div>
+          <p className="text-purple-100 text-lg max-w-2xl">Manage your freelance orders and deliverables</p>
         </div>
-
-        {/* Search and Filters */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="md:col-span-2">
+      </header>
+      <div className="max-w-6xl mx-auto px-4 py-8 flex flex-col lg:flex-row gap-8">
+        {/* Sidebar Filters */}
+        <aside className="w-full lg:w-1/3 mb-8 lg:mb-0">
+          <Card className="bg-white rounded-2xl shadow-lg p-6 sticky top-24 border-0">
+            <div className="space-y-6">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                 <Input
                   placeholder="Search orders..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 rounded-lg border-gray-300"
                 />
               </div>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="rounded-lg border-gray-300">
+                  <SelectValue placeholder="All Statuses" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Statuses</SelectItem>
+                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="accepted">Accepted</SelectItem>
+                  <SelectItem value="in_progress">In Progress</SelectItem>
+                  <SelectItem value="delivered">Delivered</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
+                  <SelectItem value="revision_requested">Revision Requested</SelectItem>
+                  <SelectItem value="cancelled">Cancelled</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="All Statuses" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="">All Statuses</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
-                <SelectItem value="accepted">Accepted</SelectItem>
-                <SelectItem value="in_progress">In Progress</SelectItem>
-                <SelectItem value="delivered">Delivered</SelectItem>
-                <SelectItem value="completed">Completed</SelectItem>
-                <SelectItem value="revision_requested">Revision Requested</SelectItem>
-                <SelectItem value="cancelled">Cancelled</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        {/* Orders List */}
-        {loading ? (
-          <div className="grid gap-6">
-            {[...Array(3)].map((_, index) => (
-              <Card key={index} className="animate-pulse">
-                <CardHeader>
-                  <div className="h-4 bg-gray-200 rounded w-1/3"></div>
-                  <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-3 bg-gray-200 rounded mb-4"></div>
-                  <div className="h-8 bg-gray-200 rounded w-full"></div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        ) : filteredOrders.length === 0 ? (
-          <Card>
-            <CardContent className="text-center py-12">
-              <p className="text-gray-500 text-lg">No orders found</p>
-              <p className="text-gray-400 mb-4">You don't have any orders yet</p>
-              <Button onClick={() => window.location.href = '/my-services'}>
-                Manage Services
-              </Button>
-            </CardContent>
           </Card>
-        ) : (
-          <div className="grid gap-6">
-            {filteredOrders.map((order) => (
-              <Card key={order._id} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle className="text-lg">Order #{order.orderNumber}</CardTitle>
-                      <CardDescription>{order.service?.title}</CardDescription>
-                    </div>
-                    <div className="text-right">
-                      <Badge className={getStatusColor(order.status)}>
-                        {getStatusText(order.status)}
-                      </Badge>
-                      <p className="text-sm text-gray-500 mt-1">
-                        ₹{order.freelancerEarnings?.toLocaleString()}
-                      </p>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium">Progress</span>
-                        <span className="text-sm text-gray-500">{order.progress}%</span>
+        </aside>
+        {/* Main Orders Content */}
+        <main className="flex-1">
+          {/* Orders List */}
+          {loading ? (
+            <div className="grid gap-8">
+              {[...Array(3)].map((_, index) => (
+                <Card key={index} className="animate-pulse rounded-2xl shadow-md border-0">
+                  <CardHeader>
+                    <div className="h-4 bg-gray-200 rounded w-1/3"></div>
+                    <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="h-3 bg-gray-200 rounded mb-4"></div>
+                    <div className="h-8 bg-gray-200 rounded w-full"></div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : filteredOrders.length === 0 ? (
+            <Card className="rounded-2xl shadow-md border-0">
+              <CardContent className="text-center py-16">
+                <Sparkles className="w-12 h-12 text-purple-300 mx-auto mb-4" />
+                <p className="text-gray-500 text-lg font-semibold">No orders found</p>
+                <p className="text-gray-400 mb-4">You don't have any orders yet</p>
+                <Button onClick={() => window.location.href = '/my-services'} className="bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold px-6 rounded-lg">
+                  Manage Services
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="flex flex-col gap-8">
+              {filteredOrders.map((order) => (
+                <Card key={order._id} className="hover:shadow-2xl transition-shadow rounded-2xl border-0 bg-white px-6 py-6 flex flex-col md:flex-row items-center gap-6">
+                  <div className="flex-1 w-full">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-2">
+                      <div>
+                        <CardTitle className="text-xl text-purple-700 font-bold mb-1">Order #{order.orderNumber}</CardTitle>
+                        <CardDescription className="text-gray-700 text-base">{order.service?.title}</CardDescription>
                       </div>
-                      <Progress value={order.progress} />
+                      <div className="text-right">
+                        <Badge className={getStatusColor(order.status) + ' rounded-full px-4 py-1 text-xs font-semibold'}>
+                          {getStatusText(order.status)}
+                        </Badge>
+                        <p className="text-sm text-gray-500 mt-1">
+                          ₹{order.freelancerEarnings?.toLocaleString()}
+                        </p>
+                      </div>
                     </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm mb-4">
                       <div>
                         <p className="text-gray-500">Client</p>
                         <p className="font-medium">
@@ -333,10 +326,17 @@ const FreelancerOrders = () => {
                         </p>
                       </div>
                     </div>
-
-                    <div className="flex space-x-2 pt-4 border-t">
+                    <div className="mb-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium text-gray-700">Progress</span>
+                        <span className="text-sm text-gray-500">{order.progress}%</span>
+                      </div>
+                      <Progress value={order.progress} />
+                    </div>
+                    <div className="flex flex-wrap gap-2 pt-4 border-t">
                       <Button 
                         size="sm" 
+                        className="bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold"
                         onClick={() => handleViewOrder(order)}
                       >
                         <Eye className="h-4 w-4 mr-2" />
@@ -345,6 +345,7 @@ const FreelancerOrders = () => {
                       <Button 
                         size="sm" 
                         variant="outline"
+                        className="border-purple-300 text-purple-700 hover:bg-purple-50"
                         onClick={() => handleChatClick(order)}
                         disabled={!order.client || !order.client._id}
                       >
@@ -354,7 +355,7 @@ const FreelancerOrders = () => {
                       {(order.status === 'in_progress' || order.status === 'revision_requested') && (
                         <Dialog>
                           <DialogTrigger asChild>
-                            <Button size="sm" variant="outline">
+                            <Button size="sm" variant="outline" className="border-blue-300 text-blue-700 hover:bg-blue-50">
                               <Upload className="h-4 w-4 mr-2" />
                               Submit Work
                             </Button>
@@ -375,7 +376,7 @@ const FreelancerOrders = () => {
                               <Button 
                                 onClick={() => submitDeliverables(order._id)}
                                 disabled={isSubmittingDelivery}
-                                className="w-full"
+                                className="w-full bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold"
                               >
                                 Submit Deliverables
                               </Button>
@@ -385,11 +386,11 @@ const FreelancerOrders = () => {
                       )}
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
+                </Card>
+              ))}
+            </div>
+          )}
+        </main>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ArrowLeft, Upload, Plus, X } from "lucide-react";
+import { ArrowLeft, Upload, Plus, X, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -255,277 +255,282 @@ const CreateService = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-[#f8fafc] to-[#f1f5f9]">
       {/* Header */}
-      <div className="bg-white border-b">
-        <div className="max-w-4xl mx-auto px-4 py-4">
-          <Button 
-            variant="ghost" 
-            onClick={() => navigate('/dashboard/freelancer')}
-            className="flex items-center space-x-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            <span>Back to Dashboard</span>
-          </Button>
+      <header className="bg-gradient-to-r from-purple-600 to-pink-500 py-12 shadow-md rounded-b-3xl mb-8">
+        <div className="max-w-5xl mx-auto px-4 flex flex-col items-center justify-center text-center">
+          <div className="flex items-center justify-center mb-4">
+            <Sparkles className="w-10 h-10 text-white mr-2" />
+            <h1 className="text-4xl md:text-5xl font-extrabold text-white tracking-tight">Create a New Service</h1>
+          </div>
+          <p className="text-purple-100 text-lg max-w-2xl">Showcase your skills and start earning by creating an amazing service listing.</p>
         </div>
-      </div>
-
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Create a New Service</h1>
-          <p className="text-gray-600">Showcase your skills and start earning by creating an amazing service listing.</p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Basic Information */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Basic Information</CardTitle>
-              <CardDescription>Provide the main details about your service</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="title">Service Title</Label>
-                <Input
-                  id="title"
-                  placeholder="I will create a professional logo design..."
-                  value={formData.title}
-                  onChange={(e) => handleInputChange('title', e.target.value)}
-                  required
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="description">Description</Label>
-                <Textarea
-                  id="description"
-                  placeholder="Describe what you'll deliver, your experience, and why clients should choose you..."
-                  rows={6}
-                  value={formData.description}
-                  onChange={(e) => handleInputChange('description', e.target.value)}
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label>Category</Label>
-                  <Select onValueChange={(value) => handleInputChange('category', value)} disabled={loadingCategories}>
-                    <SelectTrigger>
-                      <SelectValue placeholder={loadingCategories ? "Loading categories..." : "Select category"} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.map((category) => (
-                        <SelectItem key={category._id} value={category.name}>
-                          {category.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label htmlFor="subcategory">Subcategory</Label>
-                  <Input
-                    id="subcategory"
-                    placeholder="e.g., Logo Design"
-                    value={formData.subcategory}
-                    onChange={(e) => handleInputChange('subcategory', e.target.value)}
-                  />
-                </div>
-              </div>
-
-              {/* Tags */}
-              <div>
-                <Label>Tags</Label>
-                <div className="flex gap-2 mb-2">
-                  <Input
-                    placeholder="Add a tag"
-                    value={currentTag}
-                    onChange={(e) => setCurrentTag(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
-                  />
-                  <Button type="button" onClick={addTag} variant="outline">
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {formData.tags.map((tag) => (
-                    <Badge key={tag} variant="secondary" className="flex items-center gap-1">
-                      {tag}
-                      <X 
-                        className="h-3 w-3 cursor-pointer" 
-                        onClick={() => removeTag(tag)}
-                      />
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            </CardContent>
+      </header>
+      <div className="max-w-5xl mx-auto px-4 py-8 flex flex-col lg:flex-row gap-8">
+        {/* Sidebar Navigation */}
+        <aside className="w-full lg:w-1/4 mb-8 lg:mb-0">
+          <Card className="bg-white rounded-2xl shadow-lg p-6 sticky top-24 border-0">
+            <Button 
+              variant="ghost" 
+              onClick={() => navigate('/dashboard/freelancer')}
+              className="flex items-center space-x-2 w-full justify-start text-purple-700 font-semibold"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Dashboard
+            </Button>
           </Card>
-
-          {/* Service Images Upload Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Service Images</CardTitle>
-              <CardDescription>Upload up to 5 images to showcase your service</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 hover:border-gray-400 transition-colors">
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="hidden"
-                  id="service-images"
-                />
-                <label htmlFor="service-images" className="cursor-pointer">
-                  <div className="text-center">
-                    <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-lg font-medium text-gray-900 mb-2">Upload Service Images</p>
-                    <p className="text-sm text-gray-600">
-                      Click to select multiple images or drag and drop
-                    </p>
-                    <p className="text-xs text-gray-500 mt-2">
-                      Supported formats: JPEG, PNG, GIF, WebP (Max 5MB each)
-                    </p>
+        </aside>
+        {/* Main Form Content */}
+        <main className="flex-1">
+          <form onSubmit={handleSubmit} className="space-y-10">
+            {/* Basic Information */}
+            <Card className="rounded-2xl shadow-md">
+              <CardHeader>
+                <CardTitle className="text-2xl font-bold">Basic Information</CardTitle>
+                <CardDescription>Provide the main details about your service</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="title">Service Title</Label>
+                  <Input
+                    id="title"
+                    placeholder="I will create a professional logo design..."
+                    value={formData.title}
+                    onChange={(e) => handleInputChange('title', e.target.value)}
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="description">Description</Label>
+                  <Textarea
+                    id="description"
+                    placeholder="Describe what you'll deliver, your experience, and why clients should choose you..."
+                    rows={6}
+                    value={formData.description}
+                    onChange={(e) => handleInputChange('description', e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label>Category</Label>
+                    <Select onValueChange={(value) => handleInputChange('category', value)} disabled={loadingCategories}>
+                      <SelectTrigger className="rounded-lg border-gray-300">
+                        <SelectValue placeholder={loadingCategories ? 'Loading categories...' : 'Select category'} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categories.map((category) => (
+                          <SelectItem key={category._id} value={category.name}>
+                            {category.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
-                </label>
-              </div>
-
-              {/* Image Previews */}
-              {imagePreviews.length > 0 && (
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">Selected Images ({selectedImages.length}/5)</Label>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {imagePreviews.map((preview, index) => (
-                      <div key={index} className="relative group">
-                        <img
-                          src={preview}
-                          alt={`Service image ${index + 1}`}
-                          className="w-full h-24 object-cover rounded-lg border-2 border-gray-200"
+                  <div>
+                    <Label htmlFor="subcategory">Subcategory</Label>
+                    <Input
+                      id="subcategory"
+                      placeholder="e.g., Logo Design"
+                      value={formData.subcategory}
+                      onChange={(e) => handleInputChange('subcategory', e.target.value)}
+                      className="rounded-lg border-gray-300"
+                    />
+                  </div>
+                </div>
+                {/* Tags */}
+                <div>
+                  <Label>Tags</Label>
+                  <div className="flex gap-2 mb-2">
+                    <Input
+                      placeholder="Add a tag"
+                      value={currentTag}
+                      onChange={(e) => setCurrentTag(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
+                      className="rounded-lg border-gray-300"
+                    />
+                    <Button type="button" onClick={addTag} variant="outline" className="rounded-lg">
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {formData.tags.map((tag) => (
+                      <Badge key={tag} variant="secondary" className="flex items-center gap-1 rounded-full px-3 py-1 text-sm">
+                        {tag}
+                        <X 
+                          className="h-3 w-3 cursor-pointer" 
+                          onClick={() => removeTag(tag)}
                         />
-                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 rounded-lg flex items-center justify-center">
-                          <Button
-                            type="button"
-                            variant="destructive"
-                            size="sm"
-                            className="opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                            onClick={() => removeImage(index)}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-                        <div className="absolute bottom-1 left-1 bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded">
-                          {Math.round(selectedImages[index]?.size / 1024)} KB
-                        </div>
-                      </div>
+                      </Badge>
                     ))}
                   </div>
                 </div>
-              )}
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
 
-          {/* Pricing Plans */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Pricing Plans</CardTitle>
-              <CardDescription>Create different packages for your service</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid md:grid-cols-3 gap-6">
-                {['basic', 'standard', 'premium'].map((plan) => (
-                  <div key={plan} className="border rounded-lg p-4">
-                    <h3 className="font-semibold text-lg capitalize mb-4">{plan}</h3>
-                    
-                    <div className="space-y-3">
-                      <div>
-                        <Label>Package Description</Label>
-                        <Textarea
-                          placeholder="Describe what's included"
-                          rows={3}
-                          value={formData.pricingPlans[plan].description}
-                          onChange={(e) => handlePricingPlanChange(plan, 'description', e.target.value)}
-                          required={plan === 'basic'}
-                        />
-                      </div>
+            {/* Service Images Upload Section */}
+            <Card className="rounded-2xl shadow-md">
+              <CardHeader>
+                <CardTitle className="text-2xl font-bold">Service Images</CardTitle>
+                <CardDescription>Upload up to 5 images to showcase your service</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="border-2 border-dashed border-purple-300 rounded-xl p-8 hover:border-purple-400 transition-colors bg-purple-50/30">
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                    id="service-images"
+                  />
+                  <label htmlFor="service-images" className="cursor-pointer">
+                    <div className="text-center">
+                      <Upload className="h-12 w-12 text-purple-400 mx-auto mb-4" />
+                      <p className="text-lg font-semibold text-gray-900 mb-2">Upload Service Images</p>
+                      <p className="text-sm text-gray-600">
+                        Click to select multiple images or drag and drop
+                      </p>
+                      <p className="text-xs text-gray-500 mt-2">
+                        Supported formats: JPEG, PNG, GIF, WebP (Max 5MB each)
+                      </p>
+                    </div>
+                  </label>
+                </div>
+                {/* Image Previews */}
+                {imagePreviews.length > 0 && (
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">Selected Images ({selectedImages.length}/5)</Label>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                      {imagePreviews.map((preview, index) => (
+                        <div key={index} className="relative group">
+                          <img
+                            src={preview}
+                            alt={`Service image ${index + 1}`}
+                            className="w-full h-24 object-cover rounded-xl border-2 border-purple-200"
+                          />
+                          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 rounded-xl flex items-center justify-center">
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="sm"
+                              className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-full"
+                              onClick={() => removeImage(index)}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                          <div className="absolute bottom-1 left-1 bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded">
+                            {Math.round(selectedImages[index]?.size / 1024)} KB
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
 
-                      <div className="grid grid-cols-2 gap-2">
+            {/* Pricing Plans */}
+            <Card className="rounded-2xl shadow-md">
+              <CardHeader>
+                <CardTitle className="text-2xl font-bold">Pricing Plans</CardTitle>
+                <CardDescription>Create different packages for your service</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid md:grid-cols-3 gap-6">
+                  {['basic', 'standard', 'premium'].map((plan) => (
+                    <div key={plan} className="border-2 rounded-xl p-6 bg-white shadow-sm">
+                      <h3 className="font-semibold text-lg capitalize mb-4 text-purple-700">{plan}</h3>
+                      <div className="space-y-3">
                         <div>
-                          <Label>Price (₹)</Label>
+                          <Label>Package Description</Label>
+                          <Textarea
+                            placeholder="Describe what's included"
+                            rows={3}
+                            value={formData.pricingPlans[plan].description}
+                            onChange={(e) => handlePricingPlanChange(plan, 'description', e.target.value)}
+                            required={plan === 'basic'}
+                            className="rounded-lg border-gray-300"
+                          />
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <Label>Price (₹)</Label>
+                            <Input
+                              type="number"
+                              placeholder="2500"
+                              value={formData.pricingPlans[plan].price}
+                              onChange={(e) => handlePricingPlanChange(plan, 'price', e.target.value)}
+                              required={plan === 'basic'}
+                              className="rounded-lg border-gray-300"
+                            />
+                          </div>
+                          <div>
+                            <Label>Delivery (days)</Label>
+                            <Input
+                              type="number"
+                              placeholder="3"
+                              value={formData.pricingPlans[plan].deliveryTime}
+                              onChange={(e) => handlePricingPlanChange(plan, 'deliveryTime', e.target.value)}
+                              required={plan === 'basic'}
+                              className="rounded-lg border-gray-300"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <Label>Revisions</Label>
                           <Input
                             type="number"
-                            placeholder="2500"
-                            value={formData.pricingPlans[plan].price}
-                            onChange={(e) => handlePricingPlanChange(plan, 'price', e.target.value)}
-                            required={plan === 'basic'}
+                            placeholder="2"
+                            value={formData.pricingPlans[plan].revisions}
+                            onChange={(e) => handlePricingPlanChange(plan, 'revisions', e.target.value)}
+                            className="rounded-lg border-gray-300"
                           />
                         </div>
                         <div>
-                          <Label>Delivery (days)</Label>
-                          <Input
-                            type="number"
-                            placeholder="3"
-                            value={formData.pricingPlans[plan].deliveryTime}
-                            onChange={(e) => handlePricingPlanChange(plan, 'deliveryTime', e.target.value)}
-                            required={plan === 'basic'}
-                          />
-                        </div>
-                      </div>
-
-                      <div>
-                        <Label>Revisions</Label>
-                        <Input
-                          type="number"
-                          placeholder="2"
-                          value={formData.pricingPlans[plan].revisions}
-                          onChange={(e) => handlePricingPlanChange(plan, 'revisions', e.target.value)}
-                        />
-                      </div>
-
-                      <div>
-                        <div className="flex justify-between items-center mb-2">
-                          <Label>Features</Label>
-                          <Button 
-                            type="button" 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => addFeature(plan)}
-                          >
-                            <Plus className="h-3 w-3" />
-                          </Button>
-                        </div>
-                        <div className="space-y-1">
-                          {formData.pricingPlans[plan].features.map((feature, index) => (
-                            <div key={index} className="flex items-center justify-between text-sm bg-gray-50 px-2 py-1 rounded">
-                              <span>{feature}</span>
-                              <X 
-                                className="h-3 w-3 cursor-pointer text-gray-500" 
-                                onClick={() => removeFeature(plan, index)}
-                              />
-                            </div>
-                          ))}
+                          <div className="flex justify-between items-center mb-2">
+                            <Label>Features</Label>
+                            <Button 
+                              type="button" 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => addFeature(plan)}
+                              className="rounded-full"
+                            >
+                              <Plus className="h-3 w-3" />
+                            </Button>
+                          </div>
+                          <div className="space-y-1">
+                            {formData.pricingPlans[plan].features.map((feature, index) => (
+                              <div key={index} className="flex items-center justify-between text-sm bg-purple-50 px-2 py-1 rounded-full">
+                                <span>{feature}</span>
+                                <X 
+                                  className="h-3 w-3 cursor-pointer text-purple-400" 
+                                  onClick={() => removeFeature(plan, index)}
+                                />
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
 
-          {/* Submit */}
-          <div className="flex justify-end space-x-4">
-            <Button type="button" variant="outline" onClick={() => navigate('/dashboard/freelancer')}>
-              Cancel
-            </Button>
-            <Button type="submit" className="bg-blue-600 hover:bg-blue-700" disabled={isSubmitting}>
-              {isSubmitting ? 'Creating...' : 'Create Service'}
-            </Button>
-          </div>
-        </form>
+            {/* Submit */}
+            <div className="flex justify-end space-x-4">
+              <Button type="button" variant="outline" onClick={() => navigate('/dashboard/freelancer')} className="rounded-lg">
+                Cancel
+              </Button>
+              <Button type="submit" className="bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold px-8 rounded-lg shadow" disabled={isSubmitting}>
+                {isSubmitting ? 'Creating...' : 'Create Service'}
+              </Button>
+            </div>
+          </form>
+        </main>
       </div>
     </div>
   );

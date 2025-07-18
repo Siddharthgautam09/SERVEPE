@@ -21,6 +21,7 @@ import {
   Trash2
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import FreelancerProfileEdit from '@/components/FreelancerProfileEdit';
 
 const Account = () => {
   const { user, logout } = useAuth();
@@ -92,101 +93,7 @@ const Account = () => {
           </TabsList>
 
           <TabsContent value="profile">
-            <Card>
-              <CardHeader>
-                <CardTitle>Profile Information</CardTitle>
-                <CardDescription>
-                  Update your personal information and profile details
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Profile Picture */}
-                <div className="flex items-center space-x-4">
-                  <Avatar className="h-20 w-20">
-                    <AvatarImage src={user?.profilePicture} />
-                    <AvatarFallback>
-                      {user?.firstName?.[0]}{user?.lastName?.[0]}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="space-y-2">
-                    <Button variant="outline" size="sm">
-                      <Camera className="h-4 w-4 mr-2" />
-                      Change Photo
-                    </Button>
-                    <p className="text-sm text-muted-foreground">
-                      Recommended: Square image, at least 400x400px
-                    </p>
-                  </div>
-                </div>
-
-                {/* Profile Form */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="fullName">Full Name</Label>
-                    <Input
-                      id="fullName"
-                      value={profileData.fullName}
-                      onChange={(e) => setProfileData({...profileData, fullName: e.target.value})}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={profileData.email}
-                      onChange={(e) => setProfileData({...profileData, email: e.target.value})}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">Phone</Label>
-                    <Input
-                      id="phone"
-                      value={profileData.phone}
-                      onChange={(e) => setProfileData({...profileData, phone: e.target.value})}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="location">Location</Label>
-                    <Input
-                      id="location"
-                      value={profileData.location}
-                      onChange={(e) => setProfileData({...profileData, location: e.target.value})}
-                      placeholder="City, Country"
-                    />
-                  </div>
-
-                  <div className="space-y-2 md:col-span-2">
-                    <Label htmlFor="website">Website</Label>
-                    <Input
-                      id="website"
-                      value={profileData.website}
-                      onChange={(e) => setProfileData({...profileData, website: e.target.value})}
-                      placeholder="https://"
-                    />
-                  </div>
-
-                  <div className="space-y-2 md:col-span-2">
-                    <Label htmlFor="bio">Bio</Label>
-                    <textarea
-                      id="bio"
-                      className="w-full p-3 border rounded-md"
-                      rows={4}
-                      value={profileData.bio}
-                      onChange={(e) => setProfileData({...profileData, bio: e.target.value})}
-                      placeholder="Tell us about yourself..."
-                    />
-                  </div>
-                </div>
-
-                <Button onClick={handleProfileUpdate} className="w-full">
-                  Save Changes
-                </Button>
-              </CardContent>
-            </Card>
+            <FreelancerProfileEdit />
           </TabsContent>
 
           <TabsContent value="security">

@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { userAPI } from '@/api/users';
 import { useNavigate } from 'react-router-dom';
+import { Card } from '@/components/ui/card';
 
 interface ProfileFormData {
   profilePicture?: string;
@@ -180,28 +181,11 @@ const FreelancerProfileEdit = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* Sidebar */}
-      <div className="w-64 bg-white shadow-sm border-r flex flex-col">
-        <div className="p-6">
-          <h1 className="text-2xl font-bold text-gray-900">SERVPE</h1>
-        </div>
-        <nav className="flex-1">
-          <button
-            onClick={() => navigate('/')}
-            className="w-full flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
-          >
-            <Home className="h-5 w-5 mr-3" />
-            Home
-          </button>
-        </nav>
-      </div>
-
-      {/* Main Content */}
-      <div className="flex-1 max-w-2xl mx-auto p-8">
-        <h1 className="text-3xl font-semibold text-gray-900 mb-8">Profile</h1>
-
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-[#f8fafc] to-[#f1f5f9] flex items-center justify-center py-8">
+      <div className="w-full max-w-2xl mx-auto">
+        <Card className="rounded-2xl shadow-lg p-8">
+          {/* <h1 className="text-3xl font-bold text-center text-purple-700 mb-8">Edit Profile</h1> */}
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Profile Photo */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">
@@ -429,6 +413,7 @@ const FreelancerProfileEdit = () => {
             </Button>
           </div>
         </form>
+        </Card>
       </div>
     </div>
   );
