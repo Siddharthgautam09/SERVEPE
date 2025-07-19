@@ -10,6 +10,7 @@ import { formatCurrency } from '@/utils/currency';
 import { serviceAPI } from '@/api/services';
 import { categoryAPI } from '@/api/categories';
 import SidebarLayout from '@/components/SidebarLayout';
+import ServiceCard from '@/components/ServiceCard';
 import { Service } from '@/types/service';
 
 const Services = () => {
@@ -202,87 +203,11 @@ const Services = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
               {services.map(service => (
-                <Card 
-                  key={service._id} 
-                  className="bg-white hover:shadow-2xl transition-shadow duration-300 border-0 rounded-3xl cursor-pointer overflow-hidden group p-6 flex flex-col justify-between min-h-[420px]"
-                  onClick={() => handleServiceClick(service._id)}
-                >
-                  <CardHeader className="pb-4">
-                    {service.images && service.images.length > 0 && (
-                      <div className="w-full h-52 bg-gray-200 rounded-2xl mb-4 overflow-hidden relative">
-                        <img 
-                          src={service.images.find(img => img.isPrimary)?.url || service.images[0]?.url} 
-                          alt={service.images.find(img => img.isPrimary)?.alt || service.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                        <Badge className="absolute top-3 left-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs px-3 py-1 rounded-full shadow">
-                          {service.category}
-                        </Badge>
-                      </div>
-                    )}
-                    <div className="flex items-center space-x-3 mb-2">
-                      <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-lg overflow-hidden">
-                        {service.freelancer.profilePicture ? (
-                          <img 
-                            src={service.freelancer.profilePicture} 
-                            alt={`${service.freelancer.firstName} ${service.freelancer.lastName}`}
-                            className="w-12 h-12 rounded-full object-cover"
-                          />
-                        ) : (
-                          `${service.freelancer.firstName?.[0]}${service.freelancer.lastName?.[0]}`
-                        )}
-                      </div>
-                      <div>
-                        <p className="text-base font-semibold text-gray-900">
-                          {service.freelancer.firstName} {service.freelancer.lastName}
-                        </p>
-                        <div className="flex items-center space-x-1">
-                          <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                          <span className="text-xs text-gray-600">
-                            {service.averageRating?.toFixed(1) || '0.0'} ({service.totalReviews || 0})
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <CardTitle className="text-xl font-bold text-gray-900 line-clamp-2 mt-2">
-                      {service.title}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="pt-0 flex-1 flex flex-col justify-between">
-                    <CardDescription className="text-gray-600 mb-4 line-clamp-3 text-base">
-                      {service.description}
-                    </CardDescription>
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {service.subcategory && (
-                        <Badge variant="secondary" className="text-xs bg-pink-100 text-pink-700">
-                          {service.subcategory}
-                        </Badge>
-                      )}
-                    </div>
-                    <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                      <div className="flex items-center">
-                        <Clock className="w-4 h-4 mr-1 text-purple-400" />
-                        {service.pricingPlans.basic.deliveryTime} day{service.pricingPlans.basic.deliveryTime !== 1 ? 's' : ''} delivery
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between mt-auto">
-                      <div className="flex items-center text-2xl font-bold text-purple-700">
-                        <DollarSign className="w-5 h-5 mr-1" />
-                        {formatCurrency(service.pricingPlans.basic.price)}
-                      </div>
-                      <Button 
-                        size="sm" 
-                        className="bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-semibold px-6 rounded-full shadow"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleServiceClick(service._id);
-                        }}
-                      >
-                        View Details
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
+                <ServiceCard
+                  key={service._id}
+                  service={service}
+                  onClick={handleServiceClick}
+                />
               ))}
             </div>
           )}
