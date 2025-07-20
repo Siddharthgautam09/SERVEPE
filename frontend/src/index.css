@@ -2,6 +2,54 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Hide scrollbar */
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* Smooth scroll behavior */
+.scroll-smooth {
+  scroll-behavior: smooth;
+}
+
+/* Fade-in animation */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.8s ease-out;
+}
+
+/* Enhanced blur effect for edges */
+.blur-sm {
+  backdrop-filter: blur(4px);
+}
+
+/* Smooth transitions for cards */
+.testimonials-row-1 > div > div,
+.testimonials-row-2 > div > div {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Scroll-based fading effect */
+.testimonials-row-1::-webkit-scrollbar-track,
+.testimonials-row-2::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -496,4 +544,130 @@
       0 15px 30px rgba(139, 92, 246, 0.15),
       0 8px 20px rgba(168, 85, 247, 0.1);
   }
+}
+@keyframes scroll-left-to-right {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}
+
+@keyframes scroll-right-to-left {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll-left-to-right {
+  animation: scroll-left-to-right 30s linear infinite;
+}
+
+.animate-scroll-right-to-left {
+  animation: scroll-right-to-left 30s linear infinite;
+}
+
+/* Pause animation on hover for better UX */
+.testimonials-row-1:hover .animate-scroll-left-to-right,
+.testimonials-row-2:hover .animate-scroll-right-to-left {
+  animation-play-state: paused;
+}
+@keyframes marquee-left {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes marquee-right {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.animate-marquee-left {
+  animation: marquee-left 25s linear infinite;
+}
+
+.animate-marquee-right {
+  animation: marquee-right 20s linear infinite;
+}
+
+/* Pause on hover for better UX */
+.testimonials-row-1:hover .animate-marquee-left,
+.testimonials-row-2:hover .animate-marquee-right {
+  animation-play-state: paused;
+}
+
+@keyframes marquee-left {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes marquee-right {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.animate-marquee-left {
+  animation: marquee-left 30s linear infinite;
+}
+
+.animate-marquee-right {
+  animation: marquee-right 25s linear infinite;
+}
+
+/* Pause on hover for better UX */
+.testimonials-row-1:hover .animate-marquee-left,
+.testimonials-row-2:hover .animate-marquee-right {
+  animation-play-state: paused;
+}
+
+@keyframes scroll-left-to-right {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}
+
+@keyframes scroll-right-to-left {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll-left-to-right {
+  animation: scroll-left-to-right 40s linear infinite;
+}
+
+.animate-scroll-right-to-left {
+  animation: scroll-right-to-left 35s linear infinite;
+}
+
+/* Pause animation on hover for better UX */
+.testimonials-row-1:hover .animate-scroll-left-to-right,
+.testimonials-row-2:hover .animate-scroll-right-to-left {
+  animation-play-state: paused;
 }
