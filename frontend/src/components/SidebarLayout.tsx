@@ -14,7 +14,8 @@ import {
   Settings,
   Sparkles,
   User,
-  Bell
+  Bell,
+  Heart,
 } from 'lucide-react';
 
 interface SidebarLayoutProps {
@@ -41,57 +42,48 @@ const SidebarLayout: React.FC<SidebarLayoutProps> = ({ children }) => {
     { 
       icon: Home, 
       label: 'Home', 
-      path: getHomeRoute(),
-      description: 'Dashboard'
+      path: getHomeRoute()
     },
     { 
       icon: ShoppingCart, 
       label: 'Orders', 
-      path: user?.role === 'freelancer' ? '/freelancer/orders' : '/client/orders',
-      description: 'Order management'
+      path: user?.role === 'freelancer' ? '/freelancer/orders' : '/client/orders'
     },
     { 
-      icon: MessageSquare, 
-      label: 'Messages', 
-      path: '/messaging',
-      description: 'Chat & conversations',
+      icon: Heart, 
+      label: 'Testimonials', 
+      path: '/testimonials',
       hasNotification: true
     },
     { 
       icon: Briefcase, 
       label: 'Services', 
-      path: user?.role === 'freelancer' ? '/my-services' : '/services',
-      description: 'Service management'
+      path: user?.role === 'freelancer' ? '/my-services' : '/services'
     },
     { 
       icon: BarChart3, 
       label: 'Analytics', 
-      path: '/analytics',
-      description: 'Performance metrics'
+      path: '/analytics'
     },
     { 
       icon: CreditCard, 
       label: 'Payout', 
-      path: '/payout',
-      description: 'Earnings & withdrawals'
+      path: '/payout'
     },
     { 
       icon: Settings, 
       label: 'Account', 
-      path: '/account',
-      description: 'Account settings'
+      path: '/account'
     },
     { 
       icon: Sparkles, 
       label: "What's New", 
-      path: '/whats-new',
-      description: 'Latest updates'
+      path: '/whats-new'
     },
     { 
       icon: User, 
       label: 'Profile', 
-      path: `/${user?.username}`,
-      description: 'Public profile'
+      path: `/${user?.username}`
     }
   ];
 
@@ -162,19 +154,18 @@ const SidebarLayout: React.FC<SidebarLayoutProps> = ({ children }) => {
             return (
               <div key={item.path} className="relative">
                 <Button
-                  variant={active ? "default" : "ghost"}
+                  variant="ghost"
                   size="sm"
                   onClick={isMessageItem ? handleMessageClick : () => navigate(item.path)}
                   onMouseEnter={() => isMessageItem && unreadMessages > 0 && setShowMessagePopup(true)}
                   onMouseLeave={() => isMessageItem && setShowMessagePopup(false)}
-                  className={`w-full justify-start h-12 rounded-xl transition-all duration-200 shadow-none border-0 text-base font-medium group ${
-                    active 
-                      ? "bg-gradient-to-r from-purple-600 to-pink-500 text-white shadow-lg" 
-                      : "hover:bg-purple-50 text-gray-800"
+                  className={`w-full justify-start h-12 rounded-xl transition-all duration-200 shadow-none border-0 text-base font-medium group hover:bg-transparent ${
+                    active ? 'border-b border-gray-500' : ''
                   }`}
+                  style={{ color: '#565656' }}
                 >
                   <div className="relative">
-                    <Icon className={`h-5 w-5 mr-3 ${active ? "text-white" : "text-purple-500 group-hover:text-purple-700"}`} />
+                    <Icon className="h-5 w-5 mr-3" style={{ color: '#565656' }} />
                     {/* Notification dot for messages */}
                     {isMessageItem && unreadMessages > 0 && (
                       <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
@@ -189,7 +180,6 @@ const SidebarLayout: React.FC<SidebarLayoutProps> = ({ children }) => {
                         </Badge>
                       )}
                     </div>
-                    <div className="text-xs opacity-70">{item.description}</div>
                   </div>
                 </Button>
                 
