@@ -123,34 +123,43 @@ const SidebarLayout: React.FC<SidebarLayoutProps> = ({ children }) => {
   return (
     <div className="h-screen bg-background flex overflow-hidden">
       {/* Sidebar */}
-      <div className="w-64 h-full bg-gradient-to-b from-white via-gray-50 to-gray-100 border-r border-border flex flex-col rounded-r-3xl shadow-xl overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+      <div className="w-64 h-full bg-[#f3fafe] border-r border-border flex flex-col rounded-r-3xl shadow-xl overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
         {/* Header */}
-        <div className="p-6 border-b border-border flex-shrink-0 sticky top-0 z-10 bg-white/80 backdrop-blur rounded-tr-3xl shadow-sm">
-          <div className="flex items-center space-x-3">
-            <Avatar className="h-10 w-10">
-              <AvatarImage src={user?.profilePicture} />
-              <AvatarFallback>
-                {user?.firstName?.[0]}{user?.lastName?.[0]}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <h2 className="text-sm font-semibold text-gray-900 truncate">
-                {user?.firstName} {user?.lastName}
-              </h2>
-              <p className="text-xs text-purple-600 truncate font-mono">
-                servpe.com/{user?.username}
-              </p>
-            </div>
+        <div className="p-6 border-b border-border flex-shrink-0 sticky top-0 z-10 bg-[#ffff] backdrop-blur rounded-tr-3xl shadow-sm">
+          <div className="flex flex-col items-center mb-4">
+            {/* Servpe Logo */}
+            <img
+              src="/images/logo-2.png"
+              alt="Servpe Logo"
+              className="h-7 w-auto mb-2"
+            />
           </div>
         </div>
+        
+        <span
+          className="
+            font-normal text-black mt-6 block
+            text-xl sm:text-md md:text-l lg:text-xl xl:text-xl
+            transition-all text-left
+            px-4
+            font-['Roboto']
+          "
+          style={{ marginTop: '18px', fontFamily: 'Roboto, sans-serif' }}
+        >
+          Hi, {user?.firstName}
+        </span>
 
         {/* Navigation */}
-        <nav className="flex-1 p-4 space-y-2 overflow-y-auto scrollbar-none" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+        <nav
+          className="flex-1 p-2 space-y-0.5 overflow-y-auto scrollbar-none"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
           {sidebarItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.path);
             const isMessageItem = item.path === '/messages';
-            
+            const isProfileItem = item.label === 'Profile';
+
             return (
               <div key={item.path} className="relative">
                 <Button
@@ -159,21 +168,41 @@ const SidebarLayout: React.FC<SidebarLayoutProps> = ({ children }) => {
                   onClick={isMessageItem ? handleMessageClick : () => navigate(item.path)}
                   onMouseEnter={() => isMessageItem && unreadMessages > 0 && setShowMessagePopup(true)}
                   onMouseLeave={() => isMessageItem && setShowMessagePopup(false)}
-                  className={`w-full justify-start h-12 rounded-xl transition-all duration-200 shadow-none border-0 text-base font-medium group hover:bg-transparent ${
-                    active ? 'border-b border-gray-500' : ''
-                  }`}
+                  className={`w-full justify-start h-14 rounded-xl transition-all duration-200 shadow-none border-0 text-lg font-normal group px-3 py-2
+                    ${active ? 'text-[#222] font-normal' : ''}
+                    ${isProfileItem ? 'bg-[#E5F0FF]' : ''}
+                    hover:text-[#222] focus:text-[#222] active:text-[#222]
+                    hover:font-normal focus:font-normal active:font-normal
+                    hover:bg-transparent focus:bg-transparent active:bg-transparent
+                  `}
                   style={{ color: '#565656' }}
                 >
-                  <div className="relative">
-                    <Icon className="h-5 w-5 mr-3" style={{ color: '#565656' }} />
+                  <div className="relative flex items-center">
+                    {isProfileItem ? (
+                      <span className="inline-block h-8 w-8 rounded-full overflow-hidden bg-gray-200 mr-2">
+                        {user?.profilePicture ? (
+                          <img
+                            src={user.profilePicture}
+                            alt={user.firstName}
+                            className="h-full w-full object-cover rounded-full"
+                          />
+                        ) : (
+                          <span className="flex items-center justify-center h-full w-full text-gray-500 font-normal text-lg">
+                            {user?.firstName?.[0]}
+                          </span>
+                        )}
+                      </span>
+                    ) : (
+                      <Icon className="h-7 w-7 mr-2" style={{ color: '#565656' }} />
+                    )}
                     {/* Notification dot for messages */}
                     {isMessageItem && unreadMessages > 0 && (
                       <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
                     )}
                   </div>
-                  <div className="flex-1 text-left">
+                  <div className="flex-1 text-left ml-0">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-semibold">{item.label}</span>
+                      <span className="text-lg font-normal">{item.label}</span>
                       {isMessageItem && unreadMessages > 0 && (
                         <Badge className="ml-2 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">
                           {unreadMessages}
@@ -231,7 +260,7 @@ const SidebarLayout: React.FC<SidebarLayoutProps> = ({ children }) => {
         </nav>
 
         {/* Footer */}
-        <div className="p-4 border-t border-border flex-shrink-0 bg-white/80 backdrop-blur rounded-br-3xl shadow-sm mt-auto">
+        <div className="p-4 border-t border-border flex-shrink-0 bg-[#F8FDFF] backdrop-blur rounded-br-3xl shadow-sm mt-auto">
           <div className="text-xs text-gray-400 text-center font-mono">
             Servpe © 2024
           </div>
