@@ -139,31 +139,35 @@ const UserProfileByUsername = () => {
           
           {/* Main Profile Card */}
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-            {/* Bookmark Icon */}
-            <div className="flex justify-end mb-4">
-              <Bookmark className="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer" />
-            </div>
+            {/* Profile Image and Basic Info - Realigned with bookmark on right */}
+            <div className="flex items-start mb-4 relative w-full">
+              {/* Left side - Profile Image */}
+              <div className="relative -mt-14">
+                <img
+                  src={user.profilePicture || "/images/profile/default.png"}
+                  alt="Profile"
+                  className="w-20 h-20 rounded-full object-cover border-4 border-white shadow-md"
+                />
+              </div>
 
-            {/* Profile Image */}
-            <div className="flex justify-center -mt-10 mb-4">
-              <img
-                src={user.profilePicture || "/images/profile/default.png"}
-                alt="Profile"
-                className="w-20 h-20 rounded-full object-cover border-4 border-white shadow-md"
-              />
-            </div>
+              {/* Right side - Rating and Reviews */}
+              <div className="ml-4 flex flex-col">
+                {/* Rating */}
+                <div className="flex items-center mb-1">
+                  <Star className="w-4 h-4 fill-red-500 text-red-500 mr-1" />
+                  <span className="font-semibold text-gray-900 text-sm">
+                    {user.rating?.average?.toFixed(1) || '4.8'}
+                  </span>
+                </div>
+                <span className="text-xs text-gray-600 underline cursor-pointer">
+                  {user.rating?.count || '1k'} reviews
+                </span>
+              </div>
 
-            {/* Rating */}
-            <div className="flex justify-center items-center mb-2">
-              <Star className="w-4 h-4 fill-red-500 text-red-500 mr-1" />
-              <span className="font-semibold text-gray-900 text-sm">
-                {user.rating?.average?.toFixed(1) || '4.8'}
-              </span>
-            </div>
-            <div className="text-center mb-4">
-              <span className="text-xs text-gray-600 underline cursor-pointer">
-                {user.rating?.count || '1k'} reviews
-              </span>
+              {/* Bookmark Icon - Moved to right side of card */}
+              <div className="absolute right-0 top-0">
+                <Bookmark className="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer" />
+              </div>
             </div>
 
             {/* Name and Title */}
