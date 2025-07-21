@@ -179,13 +179,27 @@ const UserProfilePage = () => {
 
   return (
     <div className="w-full flex flex-col">
+      {/* Header with Back Button */}
       <div className="h-[90px] flex items-center border-b-[1px] w-full border-[#F5F5F5]">
         <div className="px-[156px]">
-          <img
-            src="/logo.png"
-            className="w-[235.24px] h-[37.12px]"
-            alt="Logo"
-          />
+          <button 
+            onClick={() => window.location.href = 'http://localhost:8081/freelancer/dashboard'}
+            className="flex items-center gap-2 text-gray-700 hover:text-gray-900 transition-colors"
+          >
+            <svg
+              width="24" 
+              height="24" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2" 
+              strokeLinecap="round" 
+              strokeLinejoin="round"
+            >
+              <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+            <span className="text-lg font-medium">Back to Dashboard</span>
+          </button>
         </div>
       </div>
       
@@ -193,10 +207,11 @@ const UserProfilePage = () => {
         <div className="text-[#3A3A3A] border-[#EDEDED] rounded-[18px] w-[400px] border-[0.5px] shadow-[0px_0px_4px_0px_#0000000A]">
           <div className="flex flex-col gap-[16.69px] pl-[40.4px] pr-[37.46px]">
             <div className="flex">
+              {/* Circular Profile Image */}
               <img
                 src={user.profilePicture || "/imgg.png"}
                 alt="Profile Image"
-                className="w-[120px] h-[120px] mt-[-60px]"
+                className="w-[120px] h-[120px] mt-[-60px] rounded-full object-cover"
               />
 
               <div className="flex items-center ml-[27.4px] justify-between w-full max-w-xs">
