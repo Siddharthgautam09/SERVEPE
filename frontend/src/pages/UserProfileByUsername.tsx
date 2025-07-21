@@ -14,6 +14,7 @@ import {
 } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 
+
 const UserProfileByUsername = () => {
   const { username } = useParams<{ username: string }>();
   const navigate = useNavigate();
@@ -21,11 +22,13 @@ const UserProfileByUsername = () => {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
+
   useEffect(() => {
     if (username) {
       loadUserProfile();
     }
   }, [username]);
+
 
   const loadUserProfile = async () => {
     try {
@@ -53,9 +56,11 @@ const UserProfileByUsername = () => {
     }
   };
 
+
   if (loading) {
     return <Loading message="Loading profile..." />;
   }
+
 
   if (!profileData) {
     return (
@@ -67,7 +72,9 @@ const UserProfileByUsername = () => {
     );
   }
 
+
   const { user, services, reviews } = profileData;
+
 
   // Only show for freelancers
   if (user.role !== 'freelancer') {
@@ -79,6 +86,7 @@ const UserProfileByUsername = () => {
       </div>
     );
   }
+
 
   // Helper function to get social icon
   const getSocialIcon = (platform: string) => {
@@ -104,8 +112,10 @@ const UserProfileByUsername = () => {
     }
   };
 
+
   // Choose skills if present, otherwise expertise
   const skillsToShow = (user.skills && user.skills.length > 0) ? user.skills : (user.expertise || []);
+
 
   return (
     <div className="w-full flex flex-col min-h-screen bg-gray-50">
@@ -133,78 +143,95 @@ const UserProfileByUsername = () => {
         </div>
       </div>
 
+
       {/* Profile Content */}
       <div className="flex justify-center w-full py-8">
-        <div className="w-[320px] space-y-4">
+        <div className="w-[320px] space-y-2">
           
           {/* Main Profile Card */}
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-            {/* Profile Image and Basic Info - Realigned with bookmark on right */}
+            {/* Profile Image and Basic Info */}
             <div className="flex items-start mb-4 relative w-full">
-              {/* Left side - Profile Image */}
-              <div className="relative -mt-14">
-                <img
-                  src={user.profilePicture || "/images/profile/default.png"}
-                  alt="Profile"
-                  className="w-20 h-20 rounded-full object-cover border-4 border-white shadow-md"
-                />
+              {/* Left side - Profile Image and Name */}
+              <div className="flex flex-col">
+                <div className="relative -mt-14 mb-3">
+                  <img
+                    src={user.profilePicture || "/images/profile/default.png"}
+                    alt="Profile"
+                    className="w-20 h-20 rounded-full object-cover border-4 border-white shadow-md"
+                  />
+                </div>
+                {/* Name and Title */}
+                <div className="text-left">
+                  <h1 className="font-semibold text-lg text-gray-900 mb-1">
+                    {user.firstName} {user.lastName}
+                  </h1>
+                  <p className="text-sm text-gray-600 leading-tight">
+                    {user.title || user.bio?.substring(0, 80) + '...' || `${user.role} on Servpe`}
+                  </p>
+                </div>
               </div>
 
-              {/* Right side - Rating and Reviews */}
-              <div className="ml-4 flex flex-col">
-                {/* Rating */}
-                <div className="flex items-center mb-1">
-                  <Star className="w-4 h-4 fill-red-500 text-red-500 mr-1" />
-                  <span className="font-semibold text-gray-900 text-sm">
-                    {user.rating?.average?.toFixed(1) || '4.8'}
+
+              {/* Rating and Reviews - Moved slightly to the left */}
+              <div className="absolute right-14 top-0 flex items-center gap-15">
+                <div className="flex flex-col items-center">
+                  <div className="flex items-center mb-1 left-12">
+                    <Star className="w-4 h-4 fill-red-500 text-red-500 mr-1" />
+                    <span className="font-semibold text-gray-900 text-sm">
+                      {user.rating?.average?.toFixed(1) || '4.8'}
+                    </span>
+                  </div>
+                  <span className="text-xs text-gray-600 underline cursor-pointer">
+                    {user.rating?.count || '1k'} reviews
                   </span>
                 </div>
-                <span className="text-xs text-gray-600 underline cursor-pointer">
-                  {user.rating?.count || '1k'} reviews
-                </span>
-              </div>
-
-              {/* Bookmark Icon - Moved to right side of card */}
-              <div className="absolute right-0 top-0">
-                <Bookmark className="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer" />
+                
+                {/* Bookmark Icon */}
+                  <div className="absolute -right-12 top-0">
+    <Bookmark className="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer" />
+  </div>
               </div>
             </div>
 
-            {/* Name and Title */}
-            <div className="text-center mb-4">
-              <h1 className="font-semibold text-lg text-gray-900 mb-1">
-                {user.firstName} {user.lastName}
-              </h1>
-              <p className="text-sm text-gray-600 leading-tight">
-                {user.title || user.bio?.substring(0, 80) + '...' || `${user.role} on Servpe`}
-              </p>
-            </div>
 
-            {/* Profile Items */}
-            <div className="flex justify-center gap-4 mb-6">
-              {user.totalExperienceYears && (
-                <div className="flex items-center gap-1">
-                  <div className="w-4 h-4 bg-gray-500 rounded-full flex items-center justify-center">
-                    <Clock className="w-2 h-2 text-white" />
+            {/* Profile Items with dotted borders */}
+            <div className="py-6 border-t border-b border-dashed border-gray-200">
+              <div className="flex justify-center gap-6">
+                {user.totalExperienceYears && (
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-center w-12 h-12 bg-blue-50 rounded-full">
+                      <Clock className="w-6 h-6 text-blue-600" />
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium text-gray-900">{user.totalExperienceYears}+ Years</div>
+                      <div className="text-xs text-gray-500">Experience</div>
+                    </div>
                   </div>
-                  <span className="text-xs text-gray-600">{user.totalExperienceYears}+ Years</span>
+                )}
+                
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center w-12 h-12 bg-purple-50 rounded-full">
+                    <span className="text-purple-600 text-lg font-bold">S</span>
+                  </div>
+                  <div>
+                    <div className="text-sm font-medium text-gray-900">Servpe</div>
+                    <div className="text-xs text-gray-500">Platform</div>
+                  </div>
                 </div>
-              )}
-              
-              <div className="flex items-center gap-1">
-                <div className="w-4 h-4 bg-gray-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-xs font-bold">S</span>
+                
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center w-12 h-12 bg-green-50 rounded-full">
+                    <MapPin className="w-6 h-6 text-green-600" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-medium text-gray-900">Malda</div>
+                    <div className="text-xs text-gray-500">Location</div>
+                  </div>
                 </div>
-                <span className="text-xs text-gray-600">Servpe</span>
-              </div>
-              
-              <div className="flex items-center gap-1">
-                <div className="w-4 h-4 bg-gray-500 rounded-full flex items-center justify-center">
-                  <MapPin className="w-2 h-2 text-white fill-white" />
-                </div>
-                <span className="text-xs text-gray-600">Malda</span>
               </div>
             </div>
+
 
             {/* Expertise Section */}
             <div className="mb-6">
@@ -233,6 +260,7 @@ const UserProfileByUsername = () => {
               </div>
             </div>
 
+
             {/* Bio */}
             <div className="mb-6">
               <p className="text-sm text-gray-700 leading-relaxed">
@@ -253,11 +281,13 @@ const UserProfileByUsername = () => {
               </p>
             </div>
 
+
             {/* Join Date */}
             <div className="mb-4">
               <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">JOINED ON</div>
               <div className="text-sm text-gray-700 font-medium">Sept, 2025</div>
             </div>
+
 
             {/* Social Links */}
             <div className="flex gap-2">
@@ -277,6 +307,7 @@ const UserProfileByUsername = () => {
             </div>
           </div>
 
+
           {/* Rating and Popular Badges */}
           <div className="flex items-center gap-3">
             <div className="flex items-center bg-gray-100 rounded-full px-3 py-1">
@@ -287,6 +318,7 @@ const UserProfileByUsername = () => {
               <span className="text-sm font-medium">Popular</span>
             </div>
           </div>
+
 
           {/* Consultation Card */}
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
@@ -320,10 +352,12 @@ const UserProfileByUsername = () => {
             </div>
           </div>
 
+
         </div>
       </div>
     </div>
   );
 };
+
 
 export default UserProfileByUsername;
