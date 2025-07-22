@@ -322,6 +322,15 @@ const FreelancerProfileEdit = () => {
             />
           </div>
 
+          {/* Skills - New Section */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-black">What are your skills?</label>
+            <Input
+              {...register('skills')}
+              placeholder="E.g. React, Node.js, UI/UX Design"
+            />
+          </div>
+
           {/* Self Description */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-black">How would you describe yourself?</label>
