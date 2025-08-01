@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { formatCurrency } from '@/utils/currency';
 import { serviceAPI } from '@/api/services';
 import { categoryAPI } from '@/api/categories';
-import SidebarLayout from '@/components/SidebarLayout';
+// import SidebarLayout from '@/components/SidebarLayout';
 import ServiceCard from '@/components/ServiceCard';
 import { Service } from '@/types/service';
 
@@ -87,107 +87,116 @@ const Services = () => {
   const handleServiceClick = (serviceId: string) => {
     navigate(`/services/${serviceId}`);
   };
-
   return (
-    <SidebarLayout>
-      {/* Header Section */}
-      <header className="bg-gradient-to-r from-purple-600 to-pink-500 py-16 shadow-md rounded-b-3xl mb-8">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col items-center justify-center text-center">
-          <div className="flex items-center justify-center mb-4">
-            <Sparkles className="w-10 h-10 text-white mr-2" />
-            <h1 className="text-5xl font-extrabold text-white tracking-tight">Browse Services</h1>
+    <div className="bg-[#FAFAFA] min-h-screen">
+      {/* Header */}
+      <header className="bg-white py-4 shadow-sm mb-6">
+        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <img src="/public/images/logo-2.png" alt="Logo" className="h-8 w-auto" />
+            <span className="font-bold text-xl text-gray-800">SERVPE</span>
           </div>
-          <p className="text-purple-100 text-lg max-w-2xl">Find the perfect service for your needs, delivered by top freelancers.</p>
+          <div className="flex-1 flex items-center max-w-lg mx-auto">
+            <Input
+              type="text"
+              placeholder="Search for services..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="rounded-lg border-gray-300 focus:ring-purple-500 focus:border-purple-500 w-full"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            {/* User avatar/menu if needed */}
+          </div>
         </div>
       </header>
 
-      {/* Main Content with Sidebar */}
-      <section className="max-w-7xl mx-auto px-4 flex flex-col lg:flex-row gap-8">
-        {/* Sidebar Filters */}
-        <aside className="w-full lg:w-1/4 mb-8 lg:mb-0">
+      <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row gap-8">
+        {/* Sidebar */}
+        <aside className="w-full md:w-1/4 max-w-xs mb-8 md:mb-0">
           <div className="bg-white rounded-2xl shadow-lg p-6 sticky top-8">
-            <h2 className="text-lg font-bold text-gray-800 mb-4">Filters</h2>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                <Select onValueChange={setSelectedCategory} disabled={loadingCategories}>
-                  <SelectTrigger className="w-full rounded-lg border-gray-300">
-                    <SelectValue placeholder={loadingCategories ? 'Loading...' : 'All Categories'} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Categories</SelectItem>
-                    {categories.map(category => (
-                      <SelectItem key={category._id} value={category.name}>{category.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-bold text-gray-800">All Filters</h2>
+              <a href="#" className="text-xs text-blue-600 font-semibold">Applied (4)</a>
+            </div>
+            {/* Price Slider */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Price</label>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-500">₹0</span>
+                <input
+                  type="range"
+                  min={0}
+                  max={1000}
+                  className="flex-1 accent-blue-500"
+                  // Add value/onChange if you want to wire it up
+                />
+                <span className="text-xs text-gray-500">₹1000</span>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Price Range</label>
-                <Select onValueChange={setPriceRange}>
-                  <SelectTrigger className="w-full rounded-lg border-gray-300">
-                    <SelectValue placeholder="Price Range" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Prices</SelectItem>
-                    <SelectItem value="0-1000">₹0 - ₹1,000</SelectItem>
-                    <SelectItem value="1000-5000">₹1,000 - ₹5,000</SelectItem>
-                    <SelectItem value="5000-10000">₹5,000 - ₹10,000</SelectItem>
-                    <SelectItem value="10000+">₹10,000+</SelectItem>
-                  </SelectContent>
-                </Select>
+            </div>
+            {/* Delivery Time */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Delivery Time</label>
+              <div className="flex flex-col gap-2">
+                <label className="flex items-center gap-2 text-sm">
+                  <input type="checkbox" className="accent-blue-500" />
+                  24 Hours
+                </label>
+                <label className="flex items-center gap-2 text-sm">
+                  <input type="checkbox" className="accent-blue-500" />
+                  3 Days
+                </label>
+                <label className="flex items-center gap-2 text-sm">
+                  <input type="checkbox" className="accent-blue-500" />
+                  7 Days
+                </label>
+                <label className="flex items-center gap-2 text-sm">
+                  <input type="checkbox" className="accent-blue-500" />
+                  30 Days
+                </label>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Delivery Time</label>
-                <Select onValueChange={setDeliveryTime}>
-                  <SelectTrigger className="w-full rounded-lg border-gray-300">
-                    <SelectValue placeholder="Delivery Time" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Any Time</SelectItem>
-                    <SelectItem value="1">1 Day</SelectItem>
-                    <SelectItem value="3">Up to 3 Days</SelectItem>
-                    <SelectItem value="7">Up to 1 Week</SelectItem>
-                    <SelectItem value="14">Up to 2 Weeks</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Sort By</label>
-                <Select onValueChange={setSortBy}>
-                  <SelectTrigger className="w-full rounded-lg border-gray-300">
-                    <SelectValue placeholder="Sort By" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="newest">Newest</SelectItem>
-                    <SelectItem value="rating">Highest Rated</SelectItem>
-                    <SelectItem value="price_low">Price: Low to High</SelectItem>
-                    <SelectItem value="price_high">Price: High to Low</SelectItem>
-                    <SelectItem value="popular">Most Popular</SelectItem>
-                  </SelectContent>
-                </Select>
+            </div>
+            {/* Talent Level */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Talent Level</label>
+              <div className="flex flex-col gap-2">
+                <label className="flex items-center gap-2 text-sm">
+                  <input type="checkbox" className="accent-blue-500" />
+                  Fresher Freelancer
+                </label>
+                <label className="flex items-center gap-2 text-sm">
+                  <input type="checkbox" className="accent-blue-500" />
+                  Verified Freelancer
+                </label>
+                <label className="flex items-center gap-2 text-sm">
+                  <input type="checkbox" className="accent-blue-500" />
+                  Top Rated Freelancer
+                </label>
+                <label className="flex items-center gap-2 text-sm">
+                  <input type="checkbox" className="accent-blue-500" />
+                  Pro Talent
+                </label>
               </div>
             </div>
           </div>
         </aside>
 
-        {/* Main Services Content */}
-        <main className="flex-1">
-          {/* Search Bar */}
-          <form onSubmit={handleSearch} className="flex items-center gap-2 mb-8">
-            <Input
-              type="text"
-              placeholder="Search services..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="flex-1 rounded-lg border-gray-300 focus:ring-purple-500 focus:border-purple-500"
-            />
-            <Button type="submit" className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-6 rounded-lg">
-              <Search className="w-5 h-5 mr-2" />
-              Search
-            </Button>
-          </form>
-
+        {/* Main Content */}
+        <main className="flex-1 min-w-0">
+          {/* Category Chips */}
+          <div className="bg-[#FFF6F2] py-3 px-4 mb-6 overflow-x-auto rounded-xl">
+            <div className="flex gap-3 w-max">
+              <Button variant="outline" className="rounded-full bg-white border border-gray-200 shadow-sm px-6 py-2 font-medium text-gray-700">Full Stack Development</Button>
+              <Button variant="outline" className="rounded-full bg-black text-white px-6 py-2 font-medium">Backend Development</Button>
+              <Button variant="outline" className="rounded-full bg-white border border-gray-200 shadow-sm px-6 py-2 font-medium text-gray-700">Backend Development</Button>
+              <Button variant="outline" className="rounded-full bg-white border border-gray-200 shadow-sm px-6 py-2 font-medium text-gray-700">Backend Development</Button>
+              <Button variant="outline" className="rounded-full bg-white border border-gray-200 shadow-sm px-6 py-2 font-medium text-gray-700">Backend Development</Button>
+              <Button variant="outline" className="rounded-full bg-white border border-gray-200 shadow-sm px-6 py-2 font-medium text-gray-700">Backend Development</Button>
+              <Button variant="outline" className="rounded-full bg-white border border-gray-200 shadow-sm px-6 py-2 font-medium text-gray-700">Backend Development Devops</Button>
+            </div>
+          </div>
+          {/* Heading */}
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Minimalist logo design</h2>
           {/* Services Grid */}
           {loading ? (
             <div className="text-center text-gray-500 py-16">
@@ -201,7 +210,7 @@ const Services = () => {
               <p className="text-gray-400 text-base mt-2">Try adjusting your filters or search terms.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {services.map(service => (
                 <ServiceCard
                   key={service._id}
@@ -212,8 +221,8 @@ const Services = () => {
             </div>
           )}
         </main>
-      </section>
-    </SidebarLayout>
+      </div>
+    </div>
   );
 };
 

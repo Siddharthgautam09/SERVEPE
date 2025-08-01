@@ -41,6 +41,7 @@ import Payout from './pages/Payout';
 import Account from './pages/Account';
 import WhatsNew from './pages/WhatsNew';
 import FreelancerOrders from './pages/FreelancerOrders';
+import Checkout from "./pages/Checkout";
 
 const queryClient = new QueryClient();
 
@@ -89,6 +90,14 @@ const App = () => (
                 element={
                   <ProtectedRoute requireRoleSelection={false}>
                     <RoleSelectionWithDetails />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/checkout" 
+                element={
+                  <ProtectedRoute requireRoleSelection={false}>
+                    <Checkout />
                   </ProtectedRoute>
                 } 
               />

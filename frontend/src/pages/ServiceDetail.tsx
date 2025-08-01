@@ -135,7 +135,7 @@ const ServiceDetail = () => {
   ) as [string, PricingPlan][];
 
   return (
-    <SidebarLayout>
+    <div className="bg-[#FAFAFA] min-h-screen">
       {/* Header */}
       <header className="bg-gradient-to-r from-purple-600 to-pink-500 py-12 shadow-md rounded-b-3xl mb-8">
         <div className="max-w-7xl mx-auto px-4 flex flex-col items-center justify-center text-center">
@@ -146,204 +146,195 @@ const ServiceDetail = () => {
           <p className="text-purple-100 text-lg max-w-2xl">Explore this service, compare plans, and connect with the freelancer</p>
         </div>
       </header>
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Back Button */}
-        <Button
-          variant="ghost"
-          onClick={() => navigate('/services')}
-          className="mb-6"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Services
-        </Button>
 
-        <div className="grid lg:grid-cols-3 gap-10">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Service Images */}
-            <Card className="rounded-2xl shadow-md overflow-hidden">
-              <CardContent className="p-0">
-                <div className="aspect-video bg-gray-200 overflow-hidden">
-                  <ImageWithFallback 
-                    src={service.images?.[0]?.url} 
-                    alt={service.title}
-                    className="w-full h-full object-cover"
-                    fallbackClassName="w-full h-full"
-                  />
-                </div>
-              </CardContent>
-            </Card>
+      <div className="max-w-7xl mx-auto px-4 py-8 grid lg:grid-cols-3 gap-10">
+        {/* Main Content (Left) */}
+        <div className="lg:col-span-2 space-y-8">
+          {/* Service Images */}
+          <Card className="rounded-2xl shadow-md overflow-hidden">
+            <CardContent className="p-0">
+              <div className="aspect-video bg-gray-200 overflow-hidden">
+                <ImageWithFallback 
+                  src={service.images?.[0]?.url} 
+                  alt={service.title}
+                  className="w-full h-full object-cover"
+                  fallbackClassName="w-full h-full"
+                />
+              </div>
+            </CardContent>
+          </Card>
 
-            {/* Service Info */}
-            <Card className="rounded-2xl shadow-md">
-              <CardHeader>
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <CardTitle className="text-3xl font-bold mb-2 text-gray-900">{service.title}</CardTitle>
-                    {/* Freelancer Info */}
-                    <div className="flex items-center gap-4 mb-4">
-                      <Avatar className="h-12 w-12">
-                        <AvatarImage src={service.freelancer.profilePicture} />
-                        <AvatarFallback>
-                          {service.freelancer.firstName[0]}{service.freelancer.lastName[0]}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-semibold text-lg text-gray-900">
-                          {service.freelancer.firstName} {service.freelancer.lastName}
-                        </p>
-                        {service.freelancer.username && (
-                          <p className="text-sm text-purple-600 font-mono">@{service.freelancer.username}</p>
-                        )}
-                        {service.averageRating > 0 && (
-                          <div className="flex items-center gap-1 mt-1">
-                            <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                            <span className="text-base font-semibold">{service.averageRating.toFixed(1)}</span>
-                            <span className="text-sm text-gray-500">({service.totalReviews} reviews)</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  {!isOwner && (
-                    <Button variant="outline" className="border-purple-300 text-purple-700 hover:bg-purple-50">
-                      <MessageSquare className="h-4 w-4 mr-2" />
-                      Contact
-                    </Button>
-                  )}
-                </div>
-                {/* Tags */}
-                <div className="flex flex-wrap gap-2 mb-2">
+          {/* Title, badges, seller info */}
+          <div className="bg-white rounded-xl shadow p-6">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">{service.title}</h1>
+                <div className="flex items-center gap-2 mb-2">
                   <Badge variant="secondary" className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
                     {service.category.replace('-', ' ')}
                   </Badge>
-                  {service.tags?.map((tag) => (
-                    <Badge key={tag} variant="outline" className="border-purple-200 text-purple-700">
-                      {tag}
-                    </Badge>
-                  ))}
+                  <span className="text-xs text-gray-400">Assured by servpe</span>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="font-semibold mb-2 text-lg">About This Service</h3>
-                    <p className="text-gray-600 leading-relaxed text-base">{service.description}</p>
+                <div className="flex items-center gap-2">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src={service.freelancer.profilePicture} />
+                    <AvatarFallback>
+                      {service.freelancer.firstName[0]}{service.freelancer.lastName[0]}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="font-semibold text-gray-800">{service.freelancer.firstName} {service.freelancer.lastName}</span>
+                  {service.freelancer.username && (
+                    <span className="text-xs text-purple-600 font-mono">@{service.freelancer.username}</span>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2 mb-2">
+              {service.tags?.map((tag) => (
+                <Badge key={tag} variant="outline" className="border-purple-200 text-purple-700">{tag}</Badge>
+              ))}
+            </div>
+          </div>
+
+          {/* Description/About */}
+          <div className="bg-white rounded-xl shadow p-6">
+            <h2 className="font-semibold text-lg mb-2">About This Service</h2>
+            <p className="text-gray-600 leading-relaxed text-base mb-4">{service.description}</p>
+          </div>
+
+          {/* Pricing Plans (interactive, buy) */}
+          <div className="bg-white rounded-xl shadow p-6">
+            <h2 className="font-semibold text-lg mb-4">Pricing Plans</h2>
+            <div className="grid md:grid-cols-3 gap-6 mb-6">
+              {availablePlans.map(([planName, plan]) => (
+                <div 
+                  key={planName}
+                  className={`border-2 rounded-xl p-6 cursor-pointer transition-all duration-200 ${
+                    selectedPlan === planName 
+                      ? 'border-purple-500 bg-purple-50 shadow-lg' 
+                      : 'border-gray-200 hover:border-purple-300 bg-white'
+                  }`}
+                  onClick={() => setSelectedPlan(planName)}
+                >
+                  <div className="text-center mb-4">
+                    <h4 className="font-semibold capitalize text-lg mb-1 text-purple-700">{planName}</h4>
+                    <p className="text-3xl font-bold text-green-600">₹{plan.price}</p>
+                    <p className="text-sm text-gray-600">{plan.description}</p>
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-purple-400" />
+                      <span>{plan.deliveryTime} days delivery</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <RefreshCw className="h-4 w-4 text-purple-400" />
+                      <span>{plan.revisions} revisions</span>
+                    </div>
+                    {plan.features && plan.features.length > 0 && (
+                      <div className="space-y-1 mt-3">
+                        {plan.features.map((feature, index) => (
+                          <div key={index} className="flex items-center gap-2">
+                            <Check className="h-4 w-4 text-green-500" />
+                            <span>{feature}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-
-            {/* Pricing Plans */}
-            <Card className="rounded-2xl shadow-md">
-              <CardHeader>
-                <CardTitle className="text-2xl font-bold text-gray-900">Pricing Plans</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid md:grid-cols-3 gap-6">
-                  {availablePlans.map(([planName, plan]) => (
-                    <div 
-                      key={planName}
-                      className={`border-2 rounded-xl p-6 cursor-pointer transition-all duration-200 ${
-                        selectedPlan === planName 
-                          ? 'border-purple-500 bg-purple-50 shadow-lg' 
-                          : 'border-gray-200 hover:border-purple-300 bg-white'
-                      }`}
-                      onClick={() => setSelectedPlan(planName)}
-                    >
-                      <div className="text-center mb-4">
-                        <h4 className="font-semibold capitalize text-lg mb-1 text-purple-700">{planName}</h4>
-                        <p className="text-3xl font-bold text-green-600">₹{plan.price}</p>
-                        <p className="text-sm text-gray-600">{plan.description}</p>
-                      </div>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex items-center gap-2">
-                          <Clock className="h-4 w-4 text-purple-400" />
-                          <span>{plan.deliveryTime} days delivery</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <RefreshCw className="h-4 w-4 text-purple-400" />
-                          <span>{plan.revisions} revisions</span>
-                        </div>
-                        {plan.features && plan.features.length > 0 && (
-                          <div className="space-y-1 mt-3">
-                            {plan.features.map((feature, index) => (
-                              <div key={index} className="flex items-center gap-2">
-                                <Check className="h-4 w-4 text-green-500" />
-                                <span>{feature}</span>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+              ))}
+            </div>
+            {/* Buy/Continue Button */}
+            {!isOwner && (
+              <div className="flex flex-col md:flex-row gap-4">
+                <Button 
+                  onClick={() => navigate('/checkout', { state: { service, selectedPlan } })}
+                  className="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-semibold rounded-full shadow"
+                  size="lg"
+                >
+                  Continue
+                </Button>
+                <Button variant="outline" className="w-full border-purple-300 text-purple-700 hover:bg-purple-50 rounded-full">
+                  <MessageSquare className="h-4 w-4 mr-2" />
+                  Contact Seller
+                </Button>
+              </div>
+            )}
+            {/* Order form modal if needed */}
+            {showOrderForm && !isOwner && (
+              <ServiceOrderForm 
+                service={service} 
+                onOrderPlaced={handleOrderPlaced}
+              />
+            )}
           </div>
 
-          {/* Sidebar */}
-          <div className="space-y-8 lg:sticky lg:top-24 h-fit">
-            {!isOwner && (
-              <>
-                {showOrderForm ? (
-                  <ServiceOrderForm 
-                    service={service} 
-                    onOrderPlaced={handleOrderPlaced}
-                  />
-                ) : (
-                  <Card className="rounded-2xl shadow-md">
-                    <CardContent className="p-8">
-                      <div className="text-center space-y-4">
-                        <div>
-                          <p className="text-3xl font-bold text-green-600">
-                            ₹{service.pricingPlans[selectedPlan as keyof typeof service.pricingPlans]?.price}
-                          </p>
-                          <p className="text-base text-gray-600 capitalize">{selectedPlan} Plan</p>
-                        </div>
-                        <Button 
-                          onClick={() => setShowOrderForm(true)}
-                          className="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-semibold rounded-full shadow"
-                          size="lg"
-                        >
-                          Continue
-                        </Button>
-                        <Button variant="outline" className="w-full border-purple-300 text-purple-700 hover:bg-purple-50 rounded-full">
-                          <MessageSquare className="h-4 w-4 mr-2" />
-                          Contact Seller
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-              </>
-            )}
+          {/* FAQ */}
+          <div className="bg-white rounded-xl shadow p-6">
+            <h2 className="font-semibold text-lg mb-4">Frequently asked question</h2>
+            {/* Render FAQ here, use your logic or static content */}
+          </div>
 
-            {/* Service Stats */}
-            <Card className="rounded-2xl shadow-md">
-              <CardHeader>
-                <CardTitle className="text-lg font-semibold text-gray-900">Service Stats</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Orders Completed</span>
-                  <span className="font-medium">{service.orders}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Average Rating</span>
-                  <span className="font-medium">{service.averageRating.toFixed(1)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Response Time</span>
-                  <span className="font-medium">Within 1 hour</span>
-                </div>
-              </CardContent>
-            </Card>
+          {/* Customer Reviews */}
+          <div className="bg-white rounded-xl shadow p-6">
+            <h2 className="font-semibold text-lg mb-4">Customer Reviews</h2>
+            <div className="flex items-center gap-8 mb-4">
+              <div>
+                <div className="text-2xl font-bold">10.0k</div>
+                <div className="text-xs text-gray-500">Total Reviews</div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold">4.8</div>
+                <div className="text-xs text-gray-500">Average Rating</div>
+              </div>
+              {/* Add rating bar if needed */}
+            </div>
+            {/* Render reviews here, use your logic */}
+          </div>
+
+          {/* Related Tags */}
+          <div className="bg-white rounded-xl shadow p-6">
+            <h2 className="font-semibold text-lg mb-4">Related tags</h2>
+            <div className="flex flex-wrap gap-2">
+              {service.tags?.map((tag) => (
+                <Badge key={tag} variant="outline" className="border-purple-200 text-purple-700">{tag}</Badge>
+              ))}
+            </div>
+          </div>
+
+          {/* People Who Viewed This Service Also Loved */}
+          <div className="bg-white rounded-xl shadow p-6">
+            <h2 className="font-semibold text-lg mb-4">People Who Viewed This Service Also Loved</h2>
+            {/* Render related services here, use your logic or static content */}
           </div>
         </div>
+
+        {/* Sidebar (Right) */}
+        <div className="space-y-8 lg:sticky lg:top-24 h-fit">
+          {/* Seller Info and Service Stats only */}
+          <Card className="rounded-2xl shadow-md">
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold text-gray-900">Service Stats</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex justify-between">
+                <span className="text-gray-600">Orders Completed</span>
+                <span className="font-medium">{service.orders}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Average Rating</span>
+                <span className="font-medium">{service.averageRating.toFixed(1)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Response Time</span>
+                <span className="font-medium">Within 1 hour</span>
+              </div>
+            </CardContent>
+          </Card>
+          {/* Add more seller info cards if needed */}
+        </div>
       </div>
-    </SidebarLayout>
+    </div>
   );
 };
 
