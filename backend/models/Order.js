@@ -30,6 +30,13 @@ const orderSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  requirementFiles: [{
+    fileName: String,
+    fileUrl: String,
+    fileSize: Number,
+    fileType: String,
+    uploadedAt: { type: Date, default: Date.now }
+  }],
   addOns: [{
     title: String,
     price: Number,

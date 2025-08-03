@@ -61,8 +61,8 @@ app.use(cors({
   origin: [ "http://localhost:8081","http://localhost:5000"],
   credentials: true
 }));
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '2gb' }));
+app.use(express.urlencoded({ extended: true, limit: '2gb' }));
 
 // Serve static files (local file storage)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -86,13 +86,20 @@ const uploadDirs = [
   'uploads/services', 
   'uploads/portfolio', 
   'uploads/deliverables',
+  'uploads/order-requirements',
   'uploads/general',
   'uploads/freelancer-projects'
 ];
 uploadDirs.forEach(dir => {
   if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-    console.log(`Created upload directory: ${dir}`);
+    try {
+      fs.mkdirSync(dir, { recursive: true });
+      console.log(`✅ Created upload directory: ${dir}`);
+    } catch (error) {
+      console.error(`❌ Failed to create upload directory ${dir}:`, error);
+    }
+  } else {
+    console.log(`✅ Upload directory exists: ${dir}`);
   }
 });
 

@@ -12,12 +12,14 @@ const { protect } = require('../middleware/auth');
 
 const router = express.Router();
 
+// Public routes
+router.get('/service/:serviceId', getServiceReviews);
+
 // Protected routes
 router.use(protect);
 
 router.post('/', createReview);
 router.get('/order/:orderId', getOrderReview);
-router.get('/service/:serviceId', getServiceReviews);
 router.get('/freelancer/:freelancerId', getFreelancerReviews);
 router.put('/:reviewId/respond', respondToReview);
 router.get('/analytics', getReviewAnalytics);

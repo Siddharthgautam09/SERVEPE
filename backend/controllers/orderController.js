@@ -4,91 +4,175 @@ const Message = require('../models/Message');
 const { upload, handleMulterError } = require('../middleware/upload');
 const mongoose = require('mongoose');
 
-// Create order
-exports.createOrder = async (req, res) => {
+// Test endpoint
+exports.testOrder = async (req, res) => {
   try {
-    const { 
-      serviceId, 
-      selectedPlan, 
-      requirements, 
-      addOns = [] 
-    } = req.body;
-
-    const service = await Service.findById(serviceId).populate('freelancer');
-    if (!service) {
-      return res.status(404).json({
-        success: false,
-        message: 'Service not found'
-      });
-    }
-
-    // Calculate pricing
-    const planPrice = service.pricingPlans[selectedPlan].price;
-    const addOnsTotal = addOns.reduce((sum, addOn) => sum + addOn.price, 0);
-    const totalAmount = planPrice + addOnsTotal;
-    const platformFee = totalAmount * 0.1; // 10% platform fee
-    const freelancerEarnings = totalAmount - platformFee;
-
-    // Calculate delivery date
-    const deliveryDays = service.pricingPlans[selectedPlan].deliveryTime + 
-      addOns.reduce((sum, addOn) => sum + (addOn.deliveryTime || 0), 0);
-    const deliveryDate = new Date();
-    deliveryDate.setDate(deliveryDate.getDate() + deliveryDays);
-
-    // Generate order number manually to ensure it's set
-    const count = await Order.countDocuments();
-    const orderNumber = `ORD${Date.now()}${count.toString().padStart(4, '0')}`;
-
-    // Generate conversation ID
-    const conversationId = [req.user.id, service.freelancer._id].sort().join('_');
-
-    const order = await Order.create({
-      orderNumber,
-      conversationId,
-      client: req.user.id,
-      freelancer: service.freelancer._id,
-      service: serviceId,
-      selectedPlan,
-      requirements,
-      addOns,
-      totalAmount,
-      platformFee,
-      freelancerEarnings,
-      deliveryDate,
-      status: 'pending'
-    });
-
-    // Update service orders count
-    await Service.findByIdAndUpdate(serviceId, { $inc: { orders: 1 } });
-
-    const populatedOrder = await Order.findById(order._id)
-      .populate('client', 'firstName lastName email profilePicture')
-      .populate('freelancer', 'firstName lastName email profilePicture')
-      .populate('service', 'title description images');
-
-    // Emit socket event for real-time updates
-    const io = req.app.get('io');
-    if (io) {
-      io.to(`user_${service.freelancer._id}`).emit('newOrder', {
-        orderId: order._id,
-        client: populatedOrder.client,
-        service: populatedOrder.service
-      });
-    }
-
-    res.status(201).json({
+    res.status(200).json({
       success: true,
-      data: populatedOrder
+      message: 'Order controller is working',
+      body: req.body,
+      files: req.files ? req.files.length : 0
     });
   } catch (error) {
-    console.error('Create order error:', error);
+    console.error('Test order error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error creating order',
+      message: 'Test failed',
       error: error.message
     });
   }
 };
+
+// Create order
+exports.createOrder = [
+  upload.array('requirementFiles', 10),
+  handleMulterError,
+  async (req, res) => {
+    try {
+      console.log('Create order request body:', req.body);
+      console.log('Files uploaded:', req.files ? req.files.length : 0);
+      
+      const { 
+        serviceId, 
+        selectedPlan, 
+        requirements, 
+        addOns 
+      } = req.body;
+
+      // Validate required fields
+      if (!serviceId || !selectedPlan || !requirements) {
+        return res.status(400).json({
+          success: false,
+          message: 'Missing required fields: serviceId, selectedPlan, or requirements'
+        });
+      }
+
+      // Parse addOns if it's a JSON string
+      let parsedAddOns = [];
+      if (addOns) {
+        try {
+          parsedAddOns = typeof addOns === 'string' ? JSON.parse(addOns) : addOns;
+        } catch (parseError) {
+          console.error('Error parsing addOns:', parseError);
+          parsedAddOns = [];
+        }
+      }
+
+      console.log('Looking for service with ID:', serviceId);
+      const service = await Service.findById(serviceId).populate('freelancer');
+      if (!service) {
+        return res.status(404).json({
+          success: false,
+          message: 'Service not found'
+        });
+      }
+
+      console.log('Service found:', service.title);
+      console.log('Service pricing plans:', service.pricingPlans);
+      console.log('Selected plan:', selectedPlan);
+
+      // Validate pricing plan exists
+      if (!service.pricingPlans || !service.pricingPlans[selectedPlan]) {
+        return res.status(400).json({
+          success: false,
+          message: `Pricing plan '${selectedPlan}' not found for this service`
+        });
+      }
+
+      // Process uploaded requirement files
+      const requirementFiles = req.files ? req.files.map(file => ({
+        fileName: file.originalname,
+        fileUrl: `/uploads/order-requirements/${file.filename}`,
+        fileSize: file.size,
+        fileType: file.mimetype
+      })) : [];
+
+      console.log('Requirement files processed:', requirementFiles.length);
+
+      // Calculate pricing
+      const planPrice = service.pricingPlans[selectedPlan].price;
+      const addOnsTotal = parsedAddOns.reduce((sum, addOn) => sum + (addOn.price || 0), 0);
+      const totalAmount = planPrice + addOnsTotal;
+      const platformFee = totalAmount * 0.1; // 10% platform fee
+      const freelancerEarnings = totalAmount - platformFee;
+
+      console.log('Pricing calculated:', {
+        planPrice,
+        addOnsTotal,
+        totalAmount,
+        platformFee,
+        freelancerEarnings
+      });
+
+      // Calculate delivery date
+      const deliveryDays = service.pricingPlans[selectedPlan].deliveryTime + 
+        parsedAddOns.reduce((sum, addOn) => sum + (addOn.deliveryTime || 0), 0);
+      const deliveryDate = new Date();
+      deliveryDate.setDate(deliveryDate.getDate() + deliveryDays);
+
+      // Generate order number manually to ensure it's set
+      const count = await Order.countDocuments();
+      const orderNumber = `ORD${Date.now()}${count.toString().padStart(4, '0')}`;
+
+      // Generate conversation ID
+      const conversationId = [req.user.id, service.freelancer._id].sort().join('_');
+
+      const orderData = {
+        orderNumber,
+        conversationId,
+        client: req.user.id,
+        freelancer: service.freelancer._id,
+        service: serviceId,
+        selectedPlan,
+        requirements,
+        requirementFiles,
+        addOns: parsedAddOns,
+        totalAmount,
+        platformFee,
+        freelancerEarnings,
+        deliveryDate,
+        status: 'pending'
+      };
+
+      console.log('Creating order with data:', orderData);
+
+      const order = await Order.create(orderData);
+
+      console.log('Order created successfully:', order._id);
+
+      // Update service orders count
+      await Service.findByIdAndUpdate(serviceId, { $inc: { orders: 1 } });
+
+      const populatedOrder = await Order.findById(order._id)
+        .populate('client', 'firstName lastName email profilePicture')
+        .populate('freelancer', 'firstName lastName email profilePicture')
+        .populate('service', 'title description images');
+
+      // Emit socket event for real-time updates
+      const io = req.app.get('io');
+      if (io) {
+        io.to(`user_${service.freelancer._id}`).emit('newOrder', {
+          orderId: order._id,
+          client: populatedOrder.client,
+          service: populatedOrder.service
+        });
+      }
+
+      res.status(201).json({
+        success: true,
+        data: populatedOrder
+      });
+    } catch (error) {
+      console.error('Create order error:', error);
+      console.error('Error stack:', error.stack);
+      res.status(500).json({
+        success: false,
+        message: 'Error creating order',
+        error: error.message
+      });
+    }
+  }
+];
 
 // Get user's orders with enhanced filtering and real-time data
 exports.getMyOrders = async (req, res) => {

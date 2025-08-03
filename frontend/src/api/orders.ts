@@ -17,8 +17,39 @@ api.interceptors.request.use((config) => {
 });
 
 export const orderAPI = {
-  async createOrder(orderData: any): Promise<ApiResponse> {
-    const response = await api.post<ApiResponse>('/orders', orderData);
+  async createOrder(orderData: any, files?: File[]): Promise<ApiResponse> {
+    console.log('Creating order with data:', orderData);
+    console.log('Files to upload:', files ? files.length : 0);
+    
+    const formData = new FormData();
+    
+    // Add text data
+    formData.append('serviceId', orderData.serviceId);
+    formData.append('selectedPlan', orderData.selectedPlan);
+    formData.append('requirements', orderData.requirements);
+    
+    if (orderData.addOns) {
+      formData.append('addOns', JSON.stringify(orderData.addOns));
+    }
+    
+    // Add files
+    if (files && files.length > 0) {
+      files.forEach((file) => {
+        formData.append('requirementFiles', file);
+      });
+    }
+    
+    // Log FormData contents for debugging
+    console.log('FormData contents:');
+    for (let [key, value] of formData.entries()) {
+      console.log(`${key}:`, value);
+    }
+    
+    const response = await api.post<ApiResponse>('/orders', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
     return response.data;
   },
 

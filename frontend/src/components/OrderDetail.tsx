@@ -157,6 +157,15 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ orderId, onOrderUpdate }) => 
     return false;
   };
 
+  const formatFileSize = (bytes: number, decimalPoint = 2) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const dm = decimalPoint < 0 ? 0 : decimalPoint;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
@@ -359,19 +368,11 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ orderId, onOrderUpdate }) => 
           <TabsTrigger value="details">Order Details</TabsTrigger>
           <TabsTrigger value="deliverables">Deliverables</TabsTrigger>
           <TabsTrigger value="history">Status History</TabsTrigger>
+          <TabsTrigger value="requirements">Requirements</TabsTrigger>
           {orderReview && <TabsTrigger value="review">Review</TabsTrigger>}
         </TabsList>
 
         <TabsContent value="details" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Requirements</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-700">{order.requirements}</p>
-            </CardContent>
-          </Card>
-
           <Card>
             <CardHeader>
               <CardTitle>{isClient ? 'Freelancer' : 'Client'} Information</CardTitle>
@@ -446,6 +447,46 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ orderId, onOrderUpdate }) => 
               </CardContent>
             </Card>
           ))}
+        </TabsContent>
+
+        <TabsContent value="requirements" className="space-y-4">
+          <div>
+            <h3 className="font-semibold mb-2">Project Requirements</h3>
+            <div className="bg-gray-50 rounded-lg p-4">
+              <p className="text-gray-700 whitespace-pre-wrap">{order.requirements}</p>
+            </div>
+          </div>
+
+          {/* Requirement Files */}
+          {order.requirementFiles && order.requirementFiles.length > 0 && (
+            <div>
+              <h3 className="font-semibold mb-2">Requirement Files</h3>
+              <div className="space-y-2">
+                {order.requirementFiles.map((file: any, index: number) => (
+                  <div key={index} className="flex items-center justify-between bg-white border rounded-lg p-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <Download className="w-4 h-4 text-blue-600" />
+                      </div>
+                      <div>
+                        <div className="font-medium text-sm">{file.fileName}</div>
+                        <div className="text-xs text-gray-500">
+                          {formatFileSize(file.fileSize)} • {file.fileType}
+                        </div>
+                      </div>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => window.open(`http://localhost:8080${file.fileUrl}`, '_blank')}
+                    >
+                      Download
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </TabsContent>
 
         {orderReview && (

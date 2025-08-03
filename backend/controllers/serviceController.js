@@ -14,17 +14,22 @@ exports.getAllServices = async (req, res) => {
       rating, 
       deliveryTime,
       search,
+      talentLevel,
       page = 1, 
       limit = 12,
       sortBy = 'createdAt',
       sortOrder = 'desc'
     } = req.query;
 
+    console.log('Service filter params:', req.query);
+
     // Build filter object
     const filter = { status: 'active', isActive: true };
     
     if (category && category.trim()) filter.category = category.trim();
     if (subcategory && subcategory.trim()) filter.subcategory = subcategory.trim();
+    
+    // Rating filter
     if (rating && !isNaN(parseFloat(rating))) {
       filter.averageRating = { $gte: parseFloat(rating) };
     }
@@ -45,15 +50,53 @@ exports.getAllServices = async (req, res) => {
       filter['pricingPlans.basic.deliveryTime'] = { $lte: parseInt(deliveryTime) };
     }
     
+    // Talent level filter
+    if (talentLevel && Array.isArray(talentLevel) && talentLevel.length > 0) {
+      // Map talent levels to freelancer rating ranges
+      const talentLevelFilters = talentLevel.map(level => {
+        switch (level) {
+          case 'Fresher Freelancer':
+            return { 'freelancer.rating.average': { $lt: 3.0 } };
+          case 'Verified Freelancer':
+            return { 'freelancer.rating.average': { $gte: 3.0, $lt: 4.0 } };
+          case 'Top Rated Freelancer':
+            return { 'freelancer.rating.average': { $gte: 4.0, $lt: 4.5 } };
+          case 'Pro Talent':
+            return { 'freelancer.rating.average': { $gte: 4.5 } };
+          default:
+            return {};
+        }
+      });
+      
+      if (talentLevelFilters.length > 0) {
+        filter.$or = talentLevelFilters;
+      }
+    }
+    
     // Search filter
     if (search && search.trim()) {
       const searchTerm = search.trim();
-      filter.$or = [
-        { title: { $regex: searchTerm, $options: 'i' } },
-        { description: { $regex: searchTerm, $options: 'i' } },
-        { tags: { $in: [new RegExp(searchTerm, 'i')] } }
-      ];
+      const searchFilter = {
+        $or: [
+          { title: { $regex: searchTerm, $options: 'i' } },
+          { description: { $regex: searchTerm, $options: 'i' } },
+          { tags: { $in: [new RegExp(searchTerm, 'i')] } }
+        ]
+      };
+      
+      // If we already have $or for talent level, combine them
+      if (filter.$or) {
+        filter.$and = [
+          { $or: filter.$or },
+          searchFilter
+        ];
+        delete filter.$or;
+      } else {
+        Object.assign(filter, searchFilter);
+      }
     }
+
+    console.log('Final filter:', JSON.stringify(filter, null, 2));
 
     // Pagination validation
     const pageNum = Math.max(1, parseInt(page) || 1);
@@ -75,6 +118,8 @@ exports.getAllServices = async (req, res) => {
       .lean();
 
     const total = await Service.countDocuments(filter);
+
+    console.log(`Found ${services.length} services out of ${total} total`);
 
     res.status(200).json({
       success: true,

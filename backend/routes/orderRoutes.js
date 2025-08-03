@@ -8,11 +8,15 @@ const {
   submitDeliverables,
   requestRevision,
   getOrderAnalytics,
-  getAllOrdersForAdmin
+  getAllOrdersForAdmin,
+  testOrder
 } = require('../controllers/orderController');
 const { protect } = require('../middleware/auth');
 
 const router = express.Router();
+
+// Test route (no auth required)
+router.post('/test', testOrder);
 
 // Admin route for getting all orders (should be before protected routes)
 router.get('/admin/all', getAllOrdersForAdmin);
