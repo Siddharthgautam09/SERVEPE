@@ -523,36 +523,49 @@ const ServiceDetail = () => {
 
 
               {/* Freelancer Info */}
-              <div className="mt-8 pt-8 border-t border-gray-200">
-                <h3 className="font-semibold text-gray-900 mb-4">About the Freelancer</h3>
-                <div className="flex items-start gap-3">
-                  <Avatar className="h-12 w-12">
-                    <AvatarImage src={service.freelancer.profilePicture} />
-                    <AvatarFallback>
-                      {service.freelancer.firstName[0]}{service.freelancer.lastName[0]}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <h3 className="font-semibold text-gray-900">{service.freelancer.firstName} {service.freelancer.lastName}</h3>
-                    <p className="text-sm text-gray-600">Co-founder, Servpe | Founder Dr. Ayusre | Content Creator</p>
-                    <p className="text-sm text-gray-600">10+ years of experience</p>
-                    <div className="flex items-center gap-2 mt-2">
-                      <div className="flex items-center gap-1">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <Star
-                            key={star}
-                            className={`w-4 h-4 ${
-                              star <= service.averageRating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
-                            }`}
-                          />
-                        ))}
-                      </div>
-                      <span className="text-sm font-medium text-gray-900">{service.averageRating.toFixed(1)}</span>
-                      <span className="text-sm text-gray-600">({totalReviews} review{totalReviews !== 1 ? 's' : ''})</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <div className="bg-white rounded-2xl shadow border border-gray-100 px-8 py-6 flex items-center gap-6 max-w-3xl mx-auto">
+  {/* Avatar */}
+  <img
+    src={service.freelancer.profilePicture}
+    alt={`${service.freelancer.firstName} ${service.freelancer.lastName}`}
+    className="h-20 w-20 rounded-full object-cover border border-gray-200"
+  />
+
+  {/* Info */}
+  <div className="flex-1 min-w-0">
+    <div className="flex items-center gap-2">
+      <span className="font-bold text-xl text-gray-900">
+        {service.freelancer.firstName} {service.freelancer.lastName}
+      </span>
+    </div>
+    <div className="text-gray-600 text-base">
+      Co-founder, Servpe | Founder Dr. Ayusri’s | Content Creator
+    </div>
+    <div className="flex items-center text-gray-600 text-base mt-1 gap-4">
+      <span className="flex items-center gap-1">
+        <svg aria-hidden="true" className="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20"><path d="M6 2a2 2 0 012 2h4a2 2 0 012 2v3.086A1.993 1.993 0 0015 9v5a2 2 0 01-2 2H7a2 2 0 01-2-2V9c0-.264.053-.515.15-.74A1.993 1.993 0 015 7.086V4a2 2 0 012-2z"></path></svg>
+        10+ years of experience
+      </span>
+      <span className="flex items-center gap-1">
+        <span className="text-red-600 text-lg">★</span>
+        <span className="font-semibold text-gray-900">{service.averageRating.toFixed(1)}</span>
+        <span className="underline text-gray-600 cursor-pointer">{totalReviews} review{totalReviews !== 1 ? 's' : ''}</span>
+      </span>
+    </div>
+  </div>
+
+  {/* Arrow */}
+  <svg
+    className="w-5 h-5 ml-4 text-gray-400"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    viewBox="0 0 24 24"
+  >
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+  </svg>
+</div>
+
             </div>
             
 
@@ -778,18 +791,6 @@ const ServiceDetail = () => {
                   </TabsContent>
                 ))}
               </Tabs>
-            </div>
-
-            {/* Message Button */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <Button 
-                variant="outline"
-                className="w-full flex items-center justify-center gap-2 text-blue-600 border-blue-600"
-                onClick={() => navigate(`/messages?user=${service.freelancer._id}`)}
-              >
-                <MessageSquare className="w-4 h-4" />
-                Message Freelancer
-              </Button>
             </div>
           </div>
         </div>
