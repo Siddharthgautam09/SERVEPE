@@ -501,19 +501,26 @@ const ServiceDetail = () => {
 
               {/* What I Can Build */}
               <div>
-                <h3 className="font-semibold text-gray-900 mb-3">What I Can Build For You</h3>
-                <div className="grid md:grid-cols-2 gap-2 text-sm text-gray-600">
-                  <div>• Social Media or Blogging Platforms</div>
-                  <div>• Project & Inventory Management Systems</div>
-                  <div>• CRM / ERP / HR Solutions</div>
-                  <div>• E-commerce Platforms</div>
-                  <div>• Educational or Health-Tech Applications</div>
-                  <div>• Real Estate or Booking Portals</div>
-                  <div>• Membership Sites & Dashboards</div>
-                  <div>• Portfolio Websites & Landing Pages</div>
-                  <div>• Or... your next BIG idea!</div>
-                </div>
-              </div>
+  <div className="font-bold text-lg mb-2">
+    <span className="bg-yellow-100 px-1 rounded">
+      What I Can Build For You:
+    </span>
+  </div>
+  <ul className="list-disc pl-6 space-y-1 text-gray-700 text-[1.1rem]">
+    <li>Social Media or Blogging Platforms</li>
+    <li>Project & Inventory Management Systems</li>
+    <li>CRM / ERP / HR Solutions</li>
+    <li>E-commerce Platforms</li>
+    <li>Educational or Health-Tech Applications</li>
+    <li>Real Estate or Booking Portals</li>
+    <li>Membership Sites & Dashboards</li>
+    <li>Portfolio Websites & Landing Pages</li>
+    <li>
+      Or... your next <span className="font-bold">BIG idea!</span> <span role="img" aria-label="rocket">🚀</span>
+    </li>
+  </ul>
+</div>
+
 
               {/* Freelancer Info */}
               <div className="mt-8 pt-8 border-t border-gray-200">
