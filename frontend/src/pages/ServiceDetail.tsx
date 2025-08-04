@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Star, Clock, RefreshCw, Check, ArrowLeft, MessageSquare, Sparkles, Heart, Share2, ChevronLeft, ChevronRight, Plus, Minus } from 'lucide-react';
+import { Star, Clock, RefreshCw, Check, ArrowLeft, MessageSquare, Sparkles, Heart, Share2, ChevronLeft, ChevronRight, Plus, Minus, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -14,6 +14,12 @@ import { useAuth } from '@/contexts/AuthContext';
 import ImageWithFallback from '@/components/ImageWithFallback';
 import { Service, PricingPlan } from '@/types/service';
 import { ApiResponse } from '@/types/api';
+
+// Header/Index-specific imports
+import servpeLogo from "@/images/img_servpe_logo_black_txt_1.png";
+import profileImage from "@/images/img_profile_image_1.png";
+import arrowDown from "@/images/img_arrowdown.svg";
+import UserMenu from "@/components/UserMenu";
 
 interface Review {
   _id: string;
@@ -40,6 +46,12 @@ const ServiceDetail = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isSaved, setIsSaved] = useState(false);
   const [showAllReviews, setShowAllReviews] = useState(false);
+
+  // Header/search-specific state
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showLoginPopup, setShowLoginPopup] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -185,6 +197,45 @@ const ServiceDetail = () => {
     });
     return distribution;
   };
+  
+  // Header / nav handlers
+  const handleLogoClick = () => {
+    if (user) {
+      if (user.role === 'client') navigate('/client-dashboard');
+      else if (user.role === 'freelancer') navigate('/freelancer-dashboard');
+      else if (user.role === 'admin') navigate('/admin/dashboard');
+      else navigate('/role-selection');
+    } else {
+      navigate('/');
+    }
+  };
+
+  const handleNavigation = (path: string) => {
+    navigate(path);
+  };
+
+  const handleUserProfileClick = () => {
+    navigate('/login');
+  };
+
+  const handleMobileMenuToggle = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
+
+  const handleMobileSearchToggle = () => {
+    setMobileSearchOpen(!mobileSearchOpen);
+  };
+  
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/services?search=${encodeURIComponent(searchQuery)}`);
+    }
+  };
+
+  const handleMainSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
 
   if (loading) {
     return (
@@ -218,46 +269,146 @@ const ServiceDetail = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => navigate(-1)}
-                className="flex items-center gap-2"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                Back
-              </Button>
-              <div className="flex items-center gap-2">
-                <img src="/images/logo-2.png" alt="Logo" className="h-8 w-auto" />
-                <span className="font-bold text-xl text-gray-800">SERVPE</span>
-              </div>
+            {/* Header */}
+      <header className="bg-white w-full shadow-sm">
+        <div className="w-full flex items-center h-[80px] px-4 md:px-6 lg:px-8 max-w-[1400px] mx-auto">
+          {/* Logo and Search Container */}
+          <div className="flex items-center flex-1 space-x-4 md:space-x-6 lg:space-x-8">
+            {/* Logo */}
+            <div className="flex-shrink-0">
+              <button onClick={handleLogoClick} className="focus:outline-none">
+                <img
+                  src={servpeLogo}
+                  alt="Servpe Logo"
+                  className="h-[28px] w-[140px] sm:h-[32px] sm:w-[160px] md:h-[36px] md:w-[180px] lg:h-[40px] lg:w-[200px] xl:h-[45px] xl:w-[260px] cursor-pointer hover:opacity-80 transition-opacity"
+                />
+              </button>
             </div>
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" size="sm" onClick={handleSave}>
-                <Heart className={`w-5 h-5 ${isSaved ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
-                <span className="ml-1 text-sm">1k+ saved</span>
-              </Button>
-              <Button variant="ghost" size="sm" onClick={handleShare}>
-                <Share2 className="w-5 h-5 text-gray-600" />
-              </Button>
+            {/* Search Bar - Hidden on mobile, visible on tablet+ */}
+            <div className="hidden md:flex flex-1 max-w-[280px] lg:max-w-[320px] xl:max-w-[400px]">
+              <form onSubmit={handleSearch} className="w-full">
+                <div className="relative">
+                  <input
+                    type="search"
+                    placeholder="Search for services..."
+                    className="w-full h-9 md:h-10 lg:h-11 bg-gray-50 rounded-full pl-0.5 pr-12 md:pl-1 md:pr-14 lg:pl-2 lg:pr-16 text-[14px] md:text-[15px] lg:text-[16px] xl:text-[18px] text-gray-700 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-200 placeholder-gray-400 placeholder:text-[12px] md:placeholder:text-[13px] lg:placeholder:text-[14px]"
+                    value={searchQuery}
+                    onChange={handleMainSearch}
+                    aria-label="Search for services"
+                    style={{ fontFamily: 'Inter, sans-serif' }}
+                  />
+                  <button type="submit" className="absolute right-3 md:right-4 top-1/2 -translate-y-1/2">
+                    <Search className="h-4 w-4 md:h-5 md:w-5 lg:h-6 lg:w-6 xl:h-7 xl:w-7 text-gray-400" />
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
+          {/* Navigation Links & User */}
+          <nav className="flex items-center space-x-2 sm:space-x-3 md:space-x-4 lg:space-x-5 xl:space-x-6" role="navigation">
+            {/* Desktop Navigation */}
+            <div className="hidden xl:flex items-center space-x-3">
+              <button onClick={() => handleNavigation('/find-freelancers')} className="text-[14px] text-[#696D75] font-medium hover:text-black transition-colors whitespace-nowrap px-2">Find Talents</button>
+              <button onClick={() => handleNavigation('/services')} className="text-[14px] text-[#696D75] font-medium hover:text-black transition-colors whitespace-nowrap px-2">Services</button>
+              <button onClick={() => handleNavigation('/how-it-works')} className="text-[14px] text-[#696D75] font-medium hover:text-black transition-colors whitespace-nowrap px-2">How it Works</button>
+              <button onClick={() => handleNavigation('/ai-matching')} className="text-[14px] text-[#696D75] font-medium hover:text-black transition-colors whitespace-nowrap px-2">AI Matching</button>
+              <button onClick={() => handleNavigation('/book-call')} className="text-[14px] text-[#696D75] font-medium hover:text-black transition-colors whitespace-nowrap px-2">Book a call</button>
+            </div>
+            {/* Tablet Navigation */}
+            <div className="hidden lg:flex xl:hidden items-center space-x-2">
+              <button onClick={() => handleNavigation('/find-freelancers')} className="text-[13px] text-[#696D75] font-medium hover:text-black transition-colors whitespace-nowrap px-1">Find Talents</button>
+              <button onClick={() => handleNavigation('/services')} className="text-[13px] text-[#696D75] font-medium hover:text-black transition-colors whitespace-nowrap px-1">Services</button>
+              <button onClick={() => handleNavigation('/ai-matching')} className="text-[13px] text-[#696D75] font-medium hover:text-black transition-colors whitespace-nowrap px-1">AI Matching</button>
+            </div>
+            {/* Medium Screen Navigation */}
+            <div className="hidden md:flex lg:hidden items-center space-x-2">
+              <button onClick={() => handleNavigation('/find-freelancers')} className="text-[12px] text-[#696D75] font-medium hover:text-black transition-colors whitespace-nowrap">Find</button>
+              <button onClick={() => handleNavigation('/services')} className="text-[12px] text-[#696D75] font-medium hover:text-black transition-colors whitespace-nowrap">Services</button>
+            </div>
+            {/* Mobile Search Button */}
+            <button className="md:hidden p-1.5 text-gray-600 hover:text-black transition-colors" onClick={handleMobileSearchToggle}>
+              <Search className="h-5 w-5" />
+            </button>
+            {/* User Profile */}
+            {user ? (
+              <UserMenu />
+            ) : (
+              <button onClick={handleUserProfileClick} className="flex items-center space-x-1 sm:space-x-2 hover:opacity-80 transition-opacity flex-shrink-0">
+                <div className="relative">
+                  <img src={profileImage} alt="User Avatar" className="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 lg:w-10 lg:h-10 xl:w-11 xl:h-11 rounded-full object-cover" />
+                  <div className="absolute bottom-0 right-0 w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 bg-green-400 rounded-full border-2 border-white"></div>
+                </div>
+                <span className="hidden sm:block text-[12px] md:text-[14px] lg:text-[16px] xl:text-[18px] text-[#696D75] font-medium">Login</span>
+                <img src={arrowDown} alt="Dropdown" className="hidden sm:block w-2 h-1.5 md:w-2.5 md:h-2 lg:w-3 lg:h-2" />
+              </button>
+            )}
+            {/* Mobile Menu Button (Hamburger) */}
+            <button
+              className="lg:hidden p-1.5 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors flex items-center justify-center flex-shrink-0"
+              onClick={handleMobileMenuToggle}
+              aria-label="Open menu"
+            >
+              <span className="relative w-5 h-5 flex flex-col justify-center items-center">
+                <span className={`block h-0.5 w-4 bg-gray-700 rounded transition-all duration-300 ${mobileMenuOpen ? 'rotate-45 translate-y-1' : ''}`}></span>
+                <span className={`block h-0.5 w-4 bg-gray-700 rounded my-0.5 transition-all duration-300 ${mobileMenuOpen ? 'opacity-0' : ''}`}></span>
+                <span className={`block h-0.5 w-4 bg-gray-700 rounded transition-all duration-300 ${mobileMenuOpen ? '-rotate-45 -translate-y-1' : ''}`}></span>
+              </span>
+            </button>
+          </nav>
         </div>
+        {/* Mobile Search Bar */}
+        <div className={`md:hidden px-4 pb-3 border-b border-gray-100 ${mobileSearchOpen ? 'block' : 'hidden'}`}>
+          <form onSubmit={handleSearch} className="w-full">
+            <div className="relative">
+              <input
+                type="search"
+                placeholder="Search for services..."
+                className="w-full h-10 bg-gray-50 rounded-full px-6 text-[15px] text-gray-700 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-200 placeholder-gray-400 placeholder:text-[13px]"
+                value={searchQuery}
+                onChange={handleMainSearch}
+                aria-label="Search for services"
+                style={{ fontFamily: 'Inter, sans-serif' }}
+              />
+              <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2">
+                <Search className="h-5 w-5 text-gray-400" />
+              </button>
+            </div>
+          </form>
+        </div>
+        {/* Mobile Menu Overlay */}
+        {mobileMenuOpen && (
+          <div className="lg:hidden fixed inset-0 z-50 bg-black bg-opacity-50" onClick={handleMobileMenuToggle}>
+            <div className="absolute top-0 right-0 w-72 sm:w-80 h-full bg-white shadow-lg transform transition-transform duration-300">
+              <div className="p-4 sm:p-6">
+                <div className="flex justify-between items-center mb-6 sm:mb-8">
+                  <h2 className="text-lg sm:text-xl font-semibold">Menu</h2>
+                  <button onClick={handleMobileMenuToggle} className="p-2 rounded-full hover:bg-gray-100">
+                    <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+                <nav className="space-y-3 sm:space-y-4">
+                  <button onClick={() => { handleNavigation('/find-freelancers'); handleMobileMenuToggle(); }} className="block w-full text-left text-base sm:text-lg text-gray-700 hover:text-black py-2 sm:py-3 border-b border-gray-100">Find Talents</button>
+                  <button onClick={() => { handleNavigation('/services'); handleMobileMenuToggle(); }} className="block w-full text-left text-base sm:text-lg text-gray-700 hover:text-black py-2 sm:py-3 border-b border-gray-100">Services</button>
+                  <button onClick={() => { handleNavigation('/how-it-works'); handleMobileMenuToggle(); }} className="block w-full text-left text-base sm:text-lg text-gray-700 hover:text-black py-2 sm:py-3 border-b border-gray-100">How it Works</button>
+                  <button onClick={() => { handleNavigation('/ai-matching'); handleMobileMenuToggle(); }} className="block w-full text-left text-base sm:text-lg text-gray-700 hover:text-black py-2 sm:py-3 border-b border-gray-100">AI Matching</button>
+                  <button onClick={() => { handleNavigation('/book-call'); handleMobileMenuToggle(); }} className="block w-full text-left text-base sm:text-lg text-gray-700 hover:text-black py-2 sm:py-3 border-b border-gray-100">Book a call</button>
+                </nav>
+              </div>
+            </div>
+          </div>
+        )}
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 py-10 ">
         {/* Service Title and Category */}
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">{service.title}</h1>
-          <div className="flex items-center gap-4 text-sm text-gray-600">
+          <h1 className="max-w-3xl text-3xl font-bold text-[#3E3E3E] mb-2">{service.title}</h1>
+          <div className="flex items-center gap-4 text-sm text-[#545454]">
             <span>{service.category}</span>
             <span>•</span>
-            <span className="text-green-600 font-medium">Assured by servpe</span>
+            <span className="text-[#000000] font-medium">Assured by servpe</span>
           </div>
         </div>
 
@@ -301,7 +452,7 @@ const ServiceDetail = () => {
               
               {/* Thumbnail Images */}
               {service.images && service.images.length > 1 && (
-                <div className="p-4 flex gap-2 overflow-x-auto">
+                <div className="p-4 flex gap-2 overflow-x-auto justify-center">
                   {service.images.map((image, index) => (
                     <button
                       key={index}
@@ -328,37 +479,25 @@ const ServiceDetail = () => {
               <p className="text-gray-700 leading-relaxed mb-6">{service.description}</p>
               
               {/* Tech Stack */}
-              <div className="mb-6">
-                <h3 className="font-semibold text-gray-900 mb-3">My Tech Stack</h3>
-                <div className="grid md:grid-cols-3 gap-4">
-                  <div>
-                    <h4 className="font-medium text-gray-800 mb-2">Frontend</h4>
-                    <div className="space-y-1 text-sm text-gray-600">
-                      <div>JavaScript</div>
-                      <div>React</div>
-                      <div>Next.js</div>
-                    </div>
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-800 mb-2">Backend</h4>
-                    <div className="space-y-1 text-sm text-gray-600">
-                      <div>Node.js</div>
-                      <div>Express.js</div>
-                      <div>PHP, Laravel</div>
-                      <div>Python</div>
-                    </div>
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-800 mb-2">Databases & Others</h4>
-                    <div className="space-y-1 text-sm text-gray-600">
-                      <div>MySQL</div>
-                      <div>MongoDB</div>
-                      <div>REST API Development</div>
-                      <div>DevOps</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+               <div className="mb-6">
+    <div className="font-bold text-lg mb-2">
+      <span className="bg-yellow-100 px-1 rounded">My Tech Stack:</span>
+    </div>
+    <ul className="list-disc pl-6 space-y-1 text-gray-700">
+      <li>
+        <span className="font-semibold">Frontend:</span> JavaScript, React, Next.js
+      </li>
+      <li>
+        <span className="font-semibold">Backend:</span> Node.js, Express.js, PHP, Laravel, Python
+      </li>
+      <li>
+        <span className="font-semibold">Databases:</span> MySQL, MongoDB
+      </li>
+      <li>
+        <span className="font-semibold">Other:</span> REST API Development, DevOps
+      </li>
+    </ul>
+  </div>
 
               {/* What I Can Build */}
               <div>
@@ -375,7 +514,40 @@ const ServiceDetail = () => {
                   <div>• Or... your next BIG idea!</div>
                 </div>
               </div>
+
+              {/* Freelancer Info */}
+              <div className="mt-8 pt-8 border-t border-gray-200">
+                <h3 className="font-semibold text-gray-900 mb-4">About the Freelancer</h3>
+                <div className="flex items-start gap-3">
+                  <Avatar className="h-12 w-12">
+                    <AvatarImage src={service.freelancer.profilePicture} />
+                    <AvatarFallback>
+                      {service.freelancer.firstName[0]}{service.freelancer.lastName[0]}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <h3 className="font-semibold text-gray-900">{service.freelancer.firstName} {service.freelancer.lastName}</h3>
+                    <p className="text-sm text-gray-600">Co-founder, Servpe | Founder Dr. Ayusre | Content Creator</p>
+                    <p className="text-sm text-gray-600">10+ years of experience</p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <div className="flex items-center gap-1">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Star
+                            key={star}
+                            className={`w-4 h-4 ${
+                              star <= service.averageRating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                      <span className="text-sm font-medium text-gray-900">{service.averageRating.toFixed(1)}</span>
+                      <span className="text-sm text-gray-600">({totalReviews} review{totalReviews !== 1 ? 's' : ''})</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
+            
 
             {/* FAQ */}
             <div className="bg-white rounded-xl shadow-sm p-6">
@@ -601,35 +773,16 @@ const ServiceDetail = () => {
               </Tabs>
             </div>
 
-            {/* Freelancer Info */}
+            {/* Message Button */}
             <div className="bg-white rounded-xl shadow-sm p-6">
-              <div className="flex items-start gap-3 mb-4">
-                <Avatar className="h-12 w-12">
-                  <AvatarImage src={service.freelancer.profilePicture} />
-                  <AvatarFallback>
-                    {service.freelancer.firstName[0]}{service.freelancer.lastName[0]}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <h3 className="font-semibold text-gray-900">{service.freelancer.firstName} {service.freelancer.lastName}</h3>
-                  <p className="text-sm text-gray-600">Co-founder, Servpe | Founder Dr. Ayusre | Content Creator</p>
-                  <p className="text-sm text-gray-600">10+ years of experience</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="flex items-center gap-1">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <Star
-                      key={star}
-                      className={`w-4 h-4 ${
-                        star <= service.averageRating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
-                      }`}
-                    />
-                  ))}
-                </div>
-                <span className="text-sm font-medium text-gray-900">{service.averageRating.toFixed(1)}</span>
-                <span className="text-sm text-gray-600">({totalReviews} review{totalReviews !== 1 ? 's' : ''})</span>
-              </div>
+              <Button 
+                variant="outline"
+                className="w-full flex items-center justify-center gap-2 text-blue-600 border-blue-600"
+                onClick={() => navigate(`/messages?user=${service.freelancer._id}`)}
+              >
+                <MessageSquare className="w-4 h-4" />
+                Message Freelancer
+              </Button>
             </div>
           </div>
         </div>

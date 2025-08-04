@@ -383,7 +383,7 @@ const Services = () => {
       </header>
 
       {/* ---------- FULL WIDTH CATEGORY CHIPS BAR -------------- */}
-      <div className="max-w-center bg-[#FFF6F2] rounded-2xl mx-6 my-4 shadow-inner">
+      <div className="max-w-7xl mx-auto px-4  bg-[#FFF6F2] rounded-2xl my-4 shadow-inner">
   <div className="max-w-[1600px] mx-auto px-4 md:px-6 lg:px-8">
     <div className="flex gap-3 overflow-x-auto py-4 rounded-xl">
       {/* Category buttons */}
