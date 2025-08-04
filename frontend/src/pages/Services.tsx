@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Search, Sparkles, X } from 'lucide-react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { Search, Sparkles, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -61,6 +61,9 @@ const Services = () => {
 
   // For search debounce
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
+
+  // Category scroll ref
+  const categoryScrollRef = useRef<HTMLDivElement>(null);
 
   // Sync search bar with filters.searchQuery
   useEffect(() => { setSearchQuery(filters.searchQuery); }, [filters.searchQuery]);
@@ -247,6 +250,19 @@ const Services = () => {
     return Array.from(categorySet);
   };
 
+  // Category scroll functions
+  const scrollCategoriesLeft = () => {
+    if (categoryScrollRef.current) {
+      categoryScrollRef.current.scrollBy({ left: -200, behavior: 'smooth' });
+    }
+  };
+
+  const scrollCategoriesRight = () => {
+    if (categoryScrollRef.current) {
+      categoryScrollRef.current.scrollBy({ left: 200, behavior: 'smooth' });
+    }
+  };
+
   // ====== Render ======
   return (
     <div className="bg-[#FAFAFA] min-h-screen">
@@ -383,30 +399,57 @@ const Services = () => {
       </header>
 
       {/* ---------- FULL WIDTH CATEGORY CHIPS BAR -------------- */}
-      <div className="max-w-7xl mx-auto px-4  bg-[#FFF6F2] rounded-2xl my-4 shadow-inner">
-  <div className="max-w-[1600px] mx-auto px-4 md:px-6 lg:px-8">
-    <div className="flex gap-3 overflow-x-auto py-4 rounded-xl">
-      {/* Category buttons */}
-      <Button
-        variant={filters.category === '' ? "default" : "outline"}
-        className="rounded-[10px] px-6 py-2 font-medium whitespace-nowrap"
-        onClick={() => handleCategoryClick('')}
-      >
-        All Categories  
-      </Button>
-      {getUniqueCategories().map((category) => (
-        <Button
-          key={category}
-          variant={filters.category === category ? "default" : "outline"}
-          className="rounded-[10px] px-6 py-2 font-medium whitespace-nowrap"
-          onClick={() => handleCategoryClick(category)}
-        >
-          {category}
-        </Button>
-      ))}
-    </div>
-  </div>
-</div>
+      <div className="max-w-7xl mx-auto px-4 bg-[#FFF6F2] rounded-2xl my-4 shadow-inner">
+        <div className="max-w-[1600px] mx-auto px-4 md:px-6 lg:px-8">
+          <div className="relative py-4">
+            {/* Left Navigation Button */}
+            <button
+              type="button"
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-2 border border-gray-200 hover:bg-gray-100 transition-colors"
+              onClick={scrollCategoriesLeft}
+              aria-label="Scroll categories left"
+            >
+              <ChevronLeft className="w-4 h-4 text-gray-600" />
+            </button>
+
+            {/* Categories Container */}
+            <div
+              ref={categoryScrollRef}
+              className="flex gap-3 overflow-x-auto mx-8 scrollbar-hide"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
+              {/* Category buttons */}
+              <Button
+                variant={filters.category === '' ? "default" : "outline"}
+                className="rounded-[10px] px-6 py-2 font-medium whitespace-nowrap flex-shrink-0"
+                onClick={() => handleCategoryClick('')}
+              >
+                All Categories  
+              </Button>
+              {getUniqueCategories().map((category) => (
+                <Button
+                  key={category}
+                  variant={filters.category === category ? "default" : "outline"}
+                  className="rounded-[10px] px-6 py-2 font-medium whitespace-nowrap flex-shrink-0"
+                  onClick={() => handleCategoryClick(category)}
+                >
+                  {category}
+                </Button>
+              ))}
+            </div>
+
+            {/* Right Navigation Button */}
+            <button
+              type="button"
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-2 border border-gray-200 hover:bg-gray-100 transition-colors"
+              onClick={scrollCategoriesRight}
+              aria-label="Scroll categories right"
+            >
+              <ChevronRight className="w-4 h-4 text-gray-600" />
+            </button>
+          </div>
+        </div>
+      </div>
 
       {/* ------------------------------------------------------ */}
 

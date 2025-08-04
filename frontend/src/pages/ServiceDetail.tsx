@@ -15,6 +15,10 @@ import ImageWithFallback from '@/components/ImageWithFallback';
 import ServiceCard from '@/components/ServiceCard';
 import { Service, PricingPlan } from '@/types/service';
 import { ApiResponse } from '@/types/api';
+import frame from "@/images/img_frame.svg";
+import frameWhite from "@/images/img_frame_white_a700.svg";
+import frameWhite28 from "@/images/img_frame_white_a700_28x28.svg";
+import frame28 from "@/images/img_frame_28x28.svg";
 
 // Header/Index-specific imports
 import servpeLogo from "@/images/img_servpe_logo_black_txt_1.png";
@@ -150,9 +154,13 @@ const ServiceDetail = () => {
 
   const loadRelatedServices = async () => {
     try {
-      const response = await serviceAPI.getAllServices({ limit: 7 });
+      const response = await serviceAPI.getAllServices({ limit: 8 }); // Get 8 to ensure we have 7 after filtering
       if (response.success) {
-        setRelatedServices(response.data || []);
+        // Filter out the current service and limit to 7
+        const filteredServices = (response.data || [])
+          .filter(srv => srv._id !== id)
+          .slice(0, 7);
+        setRelatedServices(filteredServices);
       }
     } catch (error) {
       console.error('Load related services error:', error);
@@ -257,13 +265,15 @@ const ServiceDetail = () => {
   // Scroll functions for related services
   const scrollLeft = () => {
     if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: -320, behavior: 'smooth' });
+      const scrollAmount = window.innerWidth < 640 ? 280 : 320; // Smaller scroll on mobile
+      scrollRef.current.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
     }
   };
 
   const scrollRight = () => {
     if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: 320, behavior: 'smooth' });
+      const scrollAmount = window.innerWidth < 640 ? 280 : 320; // Smaller scroll on mobile
+      scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
   };
 
@@ -431,22 +441,22 @@ const ServiceDetail = () => {
         )}
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 py-10 ">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
         {/* Service Title and Category */}
-        <div className="mb-6">
-          <h1 className="max-w-3xl text-3xl font-bold text-[#3E3E3E] mb-2">{service.title}</h1>
-          <div className="flex items-center gap-4 text-sm text-[#545454]">
+        <div className="mb-4 sm:mb-6">
+          <h1 className="max-w-3xl text-xl sm:text-2xl lg:text-3xl font-bold text-[#3E3E3E] mb-2 leading-tight">{service.title}</h1>
+          <div className="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm text-[#545454] flex-wrap">
             <span>{service.category}</span>
             <span>•</span>
             <span className="text-[#000000] font-medium">Assured by servpe</span>
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
           {/* Main Content (Left) */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="lg:col-span-2 space-y-6 lg:space-y-8">
             {/* Service Images */}
-            <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+            <div className="bg-white rounded-lg sm:rounded-xl shadow-sm overflow-hidden">
               <div className="relative">
                 <div className="aspect-video bg-gray-200 overflow-hidden">
                   <ImageWithFallback 
@@ -464,17 +474,17 @@ const ServiceDetail = () => {
                       variant="ghost"
                       size="sm"
                       onClick={prevImage}
-                      className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white"
+                      className="absolute left-1 sm:left-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white p-1 sm:p-2"
                     >
-                      <ChevronLeft className="w-4 h-4" />
+                      <ChevronLeft className="w-3 h-3 sm:w-4 sm:h-4" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={nextImage}
-                      className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white"
+                      className="absolute right-1 sm:right-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white p-1 sm:p-2"
                     >
-                      <ChevronRight className="w-4 h-4" />
+                      <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
                     </Button>
                   </>
                 )}
@@ -482,12 +492,12 @@ const ServiceDetail = () => {
               
               {/* Thumbnail Images */}
               {service.images && service.images.length > 1 && (
-                <div className="p-4 flex gap-2 overflow-x-auto justify-center">
+                <div className="p-3 sm:p-4 flex gap-1 sm:gap-2 overflow-x-auto justify-center">
                   {service.images.map((image, index) => (
                     <button
                       key={index}
                       onClick={() => setCurrentImageIndex(index)}
-                      className={`flex-shrink-0 w-20 h-16 rounded-lg overflow-hidden border-2 ${
+                      className={`flex-shrink-0 w-16 h-12 sm:w-20 sm:h-16 rounded-md sm:rounded-lg overflow-hidden border-2 ${
                         currentImageIndex === index ? 'border-purple-500' : 'border-gray-200'
                       }`}
                     >
@@ -504,16 +514,16 @@ const ServiceDetail = () => {
             </div>
 
             {/* About This Service */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">About This Service</h2>
-              <p className="text-gray-700 leading-relaxed mb-6">{service.description}</p>
+            <div className="bg-white rounded-lg sm:rounded-xl shadow-sm p-4 sm:p-6">
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">About This Service</h2>
+              <p className="text-sm sm:text-base text-gray-700 leading-relaxed mb-4 sm:mb-6">{service.description}</p>
               
               {/* Tech Stack */}
-               <div className="mb-6">
-    <div className="font-bold text-lg mb-2">
-      <span className="bg-yellow-100 px-1 rounded">My Tech Stack:</span>
+               <div className="mb-4 sm:mb-6">
+    <div className="font-bold text-base sm:text-lg mb-2">
+      <span className="bg-yellow-100 px-1 rounded text-sm sm:text-base">My Tech Stack:</span>
     </div>
-    <ul className="list-disc pl-6 space-y-1 text-gray-700">
+    <ul className="list-disc pl-4 sm:pl-6 space-y-1 text-gray-700 text-sm sm:text-base">
       <li>
         <span className="font-semibold">Frontend:</span> JavaScript, React, Next.js
       </li>
@@ -531,12 +541,12 @@ const ServiceDetail = () => {
 
               {/* What I Can Build */}
               <div>
-  <div className="font-bold text-lg mb-2">
-    <span className="bg-yellow-100 px-1 rounded">
+  <div className="font-bold text-base sm:text-lg mb-2">
+    <span className="bg-yellow-100 px-1 rounded text-sm sm:text-base">
       What I Can Build For You:
     </span>
   </div>
-  <ul className="list-disc pl-6 space-y-1 text-gray-700 text-[1.1rem]">
+  <ul className="list-disc pl-4 sm:pl-6 space-y-1 text-gray-700 text-sm sm:text-base lg:text-[1.1rem]">
     <li>Social Media or Blogging Platforms</li>
     <li>Project & Inventory Management Systems</li>
     <li>CRM / ERP / HR Solutions</li>
@@ -600,9 +610,9 @@ const ServiceDetail = () => {
             
 
             {/* FAQ */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Frequently Asked Questions</h2>
-              <div className="space-y-4">
+            <div className="bg-white rounded-lg sm:rounded-xl shadow-sm p-4 sm:p-6">
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">Frequently Asked Questions</h2>
+              <div className="space-y-3 sm:space-y-4">
                 {[
                   {
                     question: "Will I get refund my amount",
@@ -634,11 +644,11 @@ const ServiceDetail = () => {
                   }
                 ].map((faq, index) => (
                   <Collapsible key={index}>
-                    <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                      <span className="font-medium text-gray-900">{faq.question}</span>
-                      <Plus className="w-4 h-4 text-gray-500" />
+                    <CollapsibleTrigger className="flex items-center justify-between w-full p-3 sm:p-4 text-left bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                      <span className="font-medium text-gray-900 text-sm sm:text-base pr-2">{faq.question}</span>
+                      <Plus className="w-4 h-4 text-gray-500 flex-shrink-0" />
                     </CollapsibleTrigger>
-                    <CollapsibleContent className="p-4 text-gray-600">
+                    <CollapsibleContent className="p-3 sm:p-4 text-gray-600 text-sm sm:text-base">
                       {faq.answer}
                     </CollapsibleContent>
                   </Collapsible>
@@ -647,37 +657,37 @@ const ServiceDetail = () => {
             </div>
 
             {/* Customer Reviews */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold text-gray-900">Customer Reviews</h2>
-                <div className="text-right">
-                  <div className="text-2xl font-bold text-gray-900">{totalReviews.toLocaleString()}</div>
-                  <div className="text-sm text-gray-600">Total Reviews</div>
+            <div className="bg-white rounded-lg sm:rounded-xl shadow-sm p-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6 gap-3 sm:gap-0">
+                <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Customer Reviews</h2>
+                <div className="text-center sm:text-right">
+                  <div className="text-xl sm:text-2xl font-bold text-gray-900">{totalReviews.toLocaleString()}</div>
+                  <div className="text-xs sm:text-sm text-gray-600">Total Reviews</div>
                 </div>
               </div>
 
               {/* Rating Summary */}
-              <div className="flex items-center gap-8 mb-6">
+              <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8 mb-4 sm:mb-6">
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-gray-900">{service.averageRating.toFixed(1)}</div>
+                  <div className="text-2xl sm:text-3xl font-bold text-gray-900">{service.averageRating.toFixed(1)}</div>
                   <div className="flex items-center gap-1 justify-center mb-1">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <Star
                         key={star}
-                        className={`w-4 h-4 ${
+                        className={`w-3 h-3 sm:w-4 sm:h-4 ${
                           star <= service.averageRating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
                         }`}
                       />
                     ))}
                   </div>
-                  <div className="text-sm text-gray-600">Average Rating</div>
+                  <div className="text-xs sm:text-sm text-gray-600">Average Rating</div>
                 </div>
                 
                 {/* Rating Distribution */}
-                <div className="flex-1">
+                <div className="flex-1 w-full sm:w-auto">
                   {[5, 4, 3, 2, 1].map((rating) => (
                     <div key={rating} className="flex items-center gap-2 mb-1">
-                      <span className="text-sm text-gray-600 w-8">{rating}★</span>
+                      <span className="text-xs sm:text-sm text-gray-600 w-6 sm:w-8">{rating}★</span>
                       <div className="flex-1 bg-gray-200 rounded-full h-2">
                         <div
                           className="bg-yellow-400 h-2 rounded-full"
@@ -686,7 +696,7 @@ const ServiceDetail = () => {
                           }}
                         />
                       </div>
-                      <span className="text-sm text-gray-600 w-12">
+                      <span className="text-xs sm:text-sm text-gray-600 w-8 sm:w-12 text-right">
                         {ratingDistribution[rating as keyof typeof ratingDistribution]}
                       </span>
                     </div>
@@ -695,36 +705,36 @@ const ServiceDetail = () => {
               </div>
 
               {/* Individual Reviews */}
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {reviews.slice(0, showAllReviews ? reviews.length : 4).map((review) => (
-                  <div key={review._id} className="border-b border-gray-200 pb-4 last:border-b-0">
-                    <div className="flex items-start gap-3">
-                      <Avatar className="h-10 w-10">
+                  <div key={review._id} className="border-b border-gray-200 pb-3 sm:pb-4 last:border-b-0">
+                    <div className="flex items-start gap-2 sm:gap-3">
+                      <Avatar className="h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0">
                         <AvatarImage src={review.client.profilePicture} />
-                        <AvatarFallback>
+                        <AvatarFallback className="text-xs sm:text-sm">
                           {review.client.firstName[0]}{review.client.lastName[0]}
                         </AvatarFallback>
                       </Avatar>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-medium text-gray-900">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-1">
+                          <span className="font-medium text-gray-900 text-sm sm:text-base">
                             {review.client.firstName} {review.client.lastName}
                           </span>
                           {review.isVerified && (
-                            <Badge variant="secondary" className="text-xs">Certified buyer</Badge>
+                            <Badge variant="secondary" className="text-xs w-fit">Certified buyer</Badge>
                           )}
                         </div>
                         <div className="flex items-center gap-1 mb-2">
                           {[1, 2, 3, 4, 5].map((star) => (
                             <Star
                               key={star}
-                              className={`w-4 h-4 ${
+                              className={`w-3 h-3 sm:w-4 sm:h-4 ${
                                 star <= review.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
                               }`}
                             />
                           ))}
                         </div>
-                        <p className="text-gray-700 text-sm">{review.comment}</p>
+                        <p className="text-gray-700 text-xs sm:text-sm leading-relaxed">{review.comment}</p>
                       </div>
                     </div>
                   </div>
@@ -743,11 +753,11 @@ const ServiceDetail = () => {
             </div>
 
             {/* Related Tags */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Related Tags</h2>
-              <div className="flex flex-wrap gap-2">
+            <div className="bg-white rounded-lg sm:rounded-xl shadow-sm p-4 sm:p-6">
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">Related Tags</h2>
+              <div className="flex flex-wrap gap-1.5 sm:gap-2">
                 {service.tags?.map((tag) => (
-                  <Badge key={tag} variant="outline" className="border-gray-200 text-gray-700">
+                  <Badge key={tag} variant="outline" className="border-gray-200 text-gray-700 text-xs sm:text-sm">
                     {tag}
                   </Badge>
                 ))}
@@ -755,14 +765,14 @@ const ServiceDetail = () => {
             </div>
 
             {/* Related Services */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-gray-900">People Who Viewed This Service Also Loved</h2>
+            <div className="bg-white rounded-lg sm:rounded-xl shadow-sm p-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 sm:mb-4 gap-2">
+                <h2 className="text-lg sm:text-xl font-semibold text-gray-900">People Who Viewed This Service Also Loved</h2>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => navigate('/services')}
-                  className="text-blue-600 border-blue-600 hover:bg-blue-50"
+                  className="text-blue-600 border-blue-600 hover:bg-blue-50 w-fit self-start sm:self-auto text-xs sm:text-sm"
                 >
                   View All
                 </Button>
@@ -771,21 +781,21 @@ const ServiceDetail = () => {
                 {/* Left Scroll Button */}
                 <button
                   type="button"
-                  className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-2 border border-gray-200 hover:bg-gray-100"
+                  className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-1.5 sm:p-2 border border-gray-200 hover:bg-gray-100"
                   onClick={scrollLeft}
                   aria-label="Scroll left"
                 >
-                  <ChevronLeft className="w-5 h-5 text-gray-600" />
+                  <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
                 </button>
                 
                 {/* Scrollable Services Container */}
                 <div
                   ref={scrollRef}
-                  className="flex gap-4 overflow-x-auto pb-4 scroll-smooth px-8"
+                  className="flex gap-3 sm:gap-4 overflow-x-auto pb-4 scroll-smooth px-6 sm:px-8"
                   style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
                   {relatedServices.map((srv) => (
-                    <div key={srv._id} className="min-w-[320px] max-w-[320px] flex-shrink-0">
+                    <div key={srv._id} className="min-w-[280px] max-w-[280px] sm:min-w-[320px] sm:max-w-[320px] flex-shrink-0">
                       <ServiceCard
                         service={srv}
                         onClick={() => navigate(`/services/${srv._id}`)}
@@ -797,24 +807,24 @@ const ServiceDetail = () => {
                 {/* Right Scroll Button */}
                 <button
                   type="button"
-                  className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-2 border border-gray-200 hover:bg-gray-100"
+                  className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-1.5 sm:p-2 border border-gray-200 hover:bg-gray-100"
                   onClick={scrollRight}
                   aria-label="Scroll right"
                 >
-                  <ChevronRight className="w-5 h-5 text-gray-600" />
+                  <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
                 </button>
               </div>
             </div>
           </div>
 
           {/* Sidebar (Right) */}
-          <div className="space-y-6 lg:sticky lg:top-24 h-fit">
+          <div className="space-y-4 sm:space-y-6 lg:sticky lg:top-24 h-fit">
             {/* Pricing Plans */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="bg-white rounded-lg sm:rounded-xl shadow-sm p-4 sm:p-6">
               <Tabs value={selectedPlan} onValueChange={setSelectedPlan} className="w-full">
-                <TabsList className="grid w-full grid-cols-3 mb-6">
+                <TabsList className="grid w-full grid-cols-3 mb-4 sm:mb-6 h-auto">
                   {availablePlans.map(([planName, plan]) => (
-                    <TabsTrigger key={planName} value={planName} className="text-xs">
+                    <TabsTrigger key={planName} value={planName} className="text-xs sm:text-sm py-2">
                       {plan.title}
                     </TabsTrigger>
                   ))}
@@ -822,32 +832,32 @@ const ServiceDetail = () => {
                 
                 {availablePlans.map(([planName, plan]) => (
                   <TabsContent key={planName} value={planName}>
-                    <div className="text-center mb-4">
-                      <div className="text-3xl font-bold text-gray-900 mb-1">
+                    <div className="text-center mb-3 sm:mb-4">
+                      <div className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">
                         {formatPrice(plan.price)}
                       </div>
-                      <div className="text-sm text-gray-600 mb-4">{plan.description}</div>
+                      <div className="text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4">{plan.description}</div>
                       
-                      <div className="flex items-center justify-center gap-4 text-sm text-gray-600 mb-6">
+                      <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600 mb-4 sm:mb-6">
                         <div className="flex items-center gap-1">
-                          <Clock className="w-4 h-4" />
+                          <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
                           <span>Delivery in {plan.deliveryTime} Days</span>
                         </div>
                         <div className="flex items-center gap-1">
-                          <RefreshCw className="w-4 h-4" />
+                          <RefreshCw className="w-3 h-3 sm:w-4 sm:h-4" />
                           <span>{plan.revisions} Times Revision</span>
                         </div>
                       </div>
                     </div>
 
                     {/* What's Included */}
-                    <div className="mb-6">
-                      <h4 className="font-semibold text-gray-900 mb-3">What's Included in This Package</h4>
-                      <div className="space-y-2">
+                    <div className="mb-4 sm:mb-6">
+                      <h4 className="font-semibold text-gray-900 mb-2 sm:mb-3 text-sm sm:text-base">What's Included in This Package</h4>
+                      <div className="space-y-1.5 sm:space-y-2">
                         {plan.features?.map((feature, index) => (
-                          <div key={index} className="flex items-center gap-2 text-sm text-gray-700">
-                            <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
-                            <span>{feature}</span>
+                          <div key={index} className="flex items-start gap-2 text-xs sm:text-sm text-gray-700">
+                            <Check className="w-3 h-3 sm:w-4 sm:h-4 text-green-500 flex-shrink-0 mt-0.5" />
+                            <span className="leading-relaxed">{feature}</span>
                           </div>
                         ))}
                       </div>
@@ -857,7 +867,7 @@ const ServiceDetail = () => {
                     {!isOwner && (
                       <Button 
                         onClick={() => navigate('/checkout', { state: { service, selectedPlan: planName } })}
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 sm:py-3 text-sm sm:text-base"
                       >
                         Continue →
                       </Button>
@@ -869,6 +879,148 @@ const ServiceDetail = () => {
           </div>
         </div>
       </div>
+      {/* Footer Section */}
+<footer className="bg-black text-white">
+  <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
+    {/* Main Footer Content */}
+    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-8">
+      {/* Logo and Description Section - Shifted Left */}
+      <div className="col-span-1 md:col-span-1 lg:col-span-1">
+        <img 
+          src={servpeLogo} 
+          alt="Servpe Logo" 
+          className="h-[35px] sm:h-[40px] lg:h-[50px] w-auto mb-3 sm:mb-4 -ml-1 sm:-ml-2" 
+        />
+        <p className="text-[13px] sm:text-[14px] lg:text-[16px] leading-relaxed text-gray-300 mb-3 sm:mb-4">
+          India's smart freelance marketplace<br />
+          powered by AI.
+        </p>
+        <div className="flex space-x-2 sm:space-x-3">
+          <img src={frame} alt="Social" className="w-[20px] h-[20px] sm:w-[24px] sm:h-[24px] hover:opacity-80 cursor-pointer transition-opacity" />
+          <img src={frameWhite} alt="Social" className="w-[20px] h-[20px] sm:w-[24px] sm:h-[24px] hover:opacity-80 cursor-pointer transition-opacity" />
+          <img src={frameWhite28} alt="Social" className="w-[20px] h-[20px] sm:w-[24px] sm:h-[24px] hover:opacity-80 cursor-pointer transition-opacity" />
+          <img src={frame28} alt="Social" className="w-[20px] h-[20px] sm:w-[24px] sm:h-[24px] hover:opacity-80 cursor-pointer transition-opacity" />
+        </div>
+      </div>
+
+      {/* For Clients */}
+      <div className="col-span-1">
+        <h3 className="text-[16px] sm:text-[18px] lg:text-[20px] font-medium text-white mb-3 sm:mb-4 whitespace-nowrap">For Clients</h3>
+        <ul className="space-y-1 sm:space-y-2 lg:space-y-3">
+          {[
+            { label: "Find Freelancers", path: "/find-freelancers" },
+            { label: "Browse Services", path: "/services" },
+            { label: "Book a call", path: "/book-call" },
+            { label: "How it Works (Clients)", path: "/how-it-works" }
+          ].map((link) => (
+            <li key={link.label}>
+              <button 
+                className="text-[13px] sm:text-[14px] lg:text-[16px] text-gray-400 hover:text-white transition-colors duration-200 text-left"
+                onClick={() => handleNavigation(link.path)}
+              >
+                {link.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* For Freelancers */}
+      <div className="col-span-1">
+        <h3 className="text-[16px] sm:text-[18px] lg:text-[20px] font-medium text-white mb-3 sm:mb-4 whitespace-nowrap">For Freelancers</h3>
+        <ul className="space-y-1 sm:space-y-2 lg:space-y-3">
+          {[
+            { label: "Create Profile", path: "/profile" },
+            { label: "Portfolio Page", path: "/portfolio" },
+            { label: "Freelancer Dashboard", path: "/freelancer-dashboard" },
+            { label: "How it Works (Talent)", path: "/how-it-works" }
+          ].map((link) => (
+            <li key={link.label}>
+              <button 
+                className="text-[13px] sm:text-[14px] lg:text-[16px] text-gray-400 hover:text-white transition-colors duration-200 text-left"
+                onClick={() => handleNavigation(link.path)}
+              >
+                {link.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Company */}
+      <div className="col-span-1">
+        <h3 className="text-[16px] sm:text-[18px] lg:text-[20px] font-medium text-white mb-3 sm:mb-4 whitespace-nowrap">Company</h3>
+        <ul className="space-y-1 sm:space-y-2 lg:space-y-3">
+          {[
+            { label: "About Servpe", path: "/about" },
+            { label: "Our Vision", path: "/vision" },
+            { label: "Blog / Resources", path: "/blog" },
+            { label: "Careers", path: "/careers" }
+          ].map((link) => (
+            <li key={link.label}>
+              <button 
+                className="text-[13px] sm:text-[14px] lg:text-[16px] text-gray-400 hover:text-white transition-colors duration-200 text-left"
+                onClick={() => handleNavigation(link.path)}
+              >
+                {link.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Support */}
+      <div className="col-span-1">
+        <h3 className="text-[16px] sm:text-[18px] lg:text-[20px] font-medium text-white mb-3 sm:mb-4 whitespace-nowrap">Support</h3>
+        <ul className="space-y-1 sm:space-y-2 lg:space-y-3">
+          {[
+            { label: "Help Center", path: "/help" },
+            { label: "FAQs", path: "/faq" },
+            { label: "Contact Us", path: "/contact" },
+            { label: "Report a Problem", path: "/report" }
+          ].map((link) => (
+            <li key={link.label}>
+              <button 
+                className="text-[13px] sm:text-[14px] lg:text-[16px] text-gray-400 hover:text-white transition-colors duration-200 text-left"
+                onClick={() => handleNavigation(link.path)}
+              >
+                {link.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Legal - Now alongside Support */}
+      <div className="col-span-1">
+        <h3 className="text-[16px] sm:text-[18px] lg:text-[20px] font-medium text-white mb-3 sm:mb-4 whitespace-nowrap">Legal</h3>
+        <ul className="space-y-1 sm:space-y-2 lg:space-y-3">
+          {[
+            { label: "Terms & Conditions", path: "/terms" },
+            { label: "Privacy Policy", path: "/privacy" },
+            { label: "Refund & Payment Policy", path: "/refund-policy" }
+          ].map((link) => (
+            <li key={link.label}>
+              <button 
+                className="text-[13px] sm:text-[14px] lg:text-[16px] text-gray-400 hover:text-white transition-colors duration-200 text-left"
+                onClick={() => handleNavigation(link.path)}
+              >
+                {link.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+
+    {/* Copyright Section - Centered */}
+    <div className="border-t border-gray-800 pt-6 sm:pt-8">
+      <p className="text-[13px] sm:text-[14px] lg:text-[16px] text-gray-500 text-center">
+        © Servpe Innovations Pvt. Ltd. All rights reserved. 2025 | Made with ❤️ in india
+      </p>
+    </div>
+  </div>
+</footer>
     </div>
   );
 };

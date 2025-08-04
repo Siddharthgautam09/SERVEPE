@@ -92,7 +92,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service, onClick }) => {
         <div className="flex items-baseline gap-2 mb-2">
           <span className="line-through text-gray-400 text-sm">{formatCurrency(service.pricingPlans?.basic?.price * 2 || 2300)}</span>
           <span className="text-xl font-bold text-[#3E3E3E]">{formatCurrency(service.pricingPlans?.basic?.price || 1100)}</span>
-          <Badge className="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full border-0">
+          <Badge className="bg-transparent text-[#008A48] text-xs px-2 py-0.5 rounded-full border-0">
             65% OFF
           </Badge>
         </div>
