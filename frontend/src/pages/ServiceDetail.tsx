@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Star, Clock, RefreshCw, Check, ArrowLeft, MessageSquare, Sparkles, Heart, Share2, ChevronLeft, ChevronRight, Plus, Minus, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,7 @@ import { reviewAPI } from '@/api/reviews';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import ImageWithFallback from '@/components/ImageWithFallback';
+import ServiceCard from '@/components/ServiceCard';
 import { Service, PricingPlan } from '@/types/service';
 import { ApiResponse } from '@/types/api';
 
@@ -46,6 +47,7 @@ const ServiceDetail = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isSaved, setIsSaved] = useState(false);
   const [showAllReviews, setShowAllReviews] = useState(false);
+  const [relatedServices, setRelatedServices] = useState<Service[]>([]);
 
   // Header/search-specific state
   const [searchQuery, setSearchQuery] = useState("");
@@ -53,10 +55,14 @@ const ServiceDetail = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
+  // Scroll ref for related services
+  const scrollRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (id) {
       loadService(id);
       loadReviews(id);
+      loadRelatedServices();
     }
   }, [id]);
 
@@ -139,6 +145,17 @@ const ServiceDetail = () => {
       }
     } catch (error) {
       console.error('Load reviews error:', error);
+    }
+  };
+
+  const loadRelatedServices = async () => {
+    try {
+      const response = await serviceAPI.getAllServices({ limit: 7 });
+      if (response.success) {
+        setRelatedServices(response.data || []);
+      }
+    } catch (error) {
+      console.error('Load related services error:', error);
     }
   };
 
@@ -235,6 +252,19 @@ const ServiceDetail = () => {
 
   const handleMainSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
+  };
+
+  // Scroll functions for related services
+  const scrollLeft = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: -320, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: 320, behavior: 'smooth' });
+    }
   };
 
   if (loading) {
@@ -726,9 +756,53 @@ const ServiceDetail = () => {
 
             {/* Related Services */}
             <div className="bg-white rounded-xl shadow-sm p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">People Who Viewed This Service Also Loved</h2>
-              <div className="text-center text-gray-500 py-8">
-                <p>Related services will be displayed here</p>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-gray-900">People Who Viewed This Service Also Loved</h2>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate('/services')}
+                  className="text-blue-600 border-blue-600 hover:bg-blue-50"
+                >
+                  View All
+                </Button>
+              </div>
+              <div className="relative">
+                {/* Left Scroll Button */}
+                <button
+                  type="button"
+                  className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-2 border border-gray-200 hover:bg-gray-100"
+                  onClick={scrollLeft}
+                  aria-label="Scroll left"
+                >
+                  <ChevronLeft className="w-5 h-5 text-gray-600" />
+                </button>
+                
+                {/* Scrollable Services Container */}
+                <div
+                  ref={scrollRef}
+                  className="flex gap-4 overflow-x-auto pb-4 scroll-smooth px-8"
+                  style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                >
+                  {relatedServices.map((srv) => (
+                    <div key={srv._id} className="min-w-[320px] max-w-[320px] flex-shrink-0">
+                      <ServiceCard
+                        service={srv}
+                        onClick={() => navigate(`/services/${srv._id}`)}
+                      />
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Right Scroll Button */}
+                <button
+                  type="button"
+                  className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-2 border border-gray-200 hover:bg-gray-100"
+                  onClick={scrollRight}
+                  aria-label="Scroll right"
+                >
+                  <ChevronRight className="w-5 h-5 text-gray-600" />
+                </button>
               </div>
             </div>
           </div>
