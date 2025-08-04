@@ -383,36 +383,38 @@ const Services = () => {
       </header>
 
       {/* ---------- FULL WIDTH CATEGORY CHIPS BAR -------------- */}
-      <div className="w-full bg-[#FFF6F2]">
-        <div className="max-w-[1400px] mx-auto px-4 md:px-6 lg:px-8">
-          <div className="flex gap-3 overflow-x-auto py-3 rounded-xl">
-            <Button
-              variant={filters.category === '' ? "default" : "outline"}
-              className="rounded-full px-6 py-2 font-medium"
-              onClick={() => handleCategoryClick('')}
-            >
-              All Categories
-            </Button>
-            {getUniqueCategories().map((category) => (
-              <Button
-                key={category}
-                variant={filters.category === category ? "default" : "outline"}
-                className="rounded-full px-6 py-2 font-medium"
-                onClick={() => handleCategoryClick(category)}
-              >
-                {category}
-              </Button>
-            ))}
-          </div>
-        </div>
-      </div>
+      <div className="max-w-center bg-[#FFF6F2] rounded-2xl mx-6 my-4 shadow-inner">
+  <div className="max-w-[1600px] mx-auto px-4 md:px-6 lg:px-8">
+    <div className="flex gap-3 overflow-x-auto py-4 rounded-xl">
+      {/* Category buttons */}
+      <Button
+        variant={filters.category === '' ? "default" : "outline"}
+        className="rounded-[10px] px-6 py-2 font-medium whitespace-nowrap"
+        onClick={() => handleCategoryClick('')}
+      >
+        All Categories  
+      </Button>
+      {getUniqueCategories().map((category) => (
+        <Button
+          key={category}
+          variant={filters.category === category ? "default" : "outline"}
+          className="rounded-[10px] px-6 py-2 font-medium whitespace-nowrap"
+          onClick={() => handleCategoryClick(category)}
+        >
+          {category}
+        </Button>
+      ))}
+    </div>
+  </div>
+</div>
+
       {/* ------------------------------------------------------ */}
 
       {/* Main section with filters/sidebar and main content */}
-      <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row gap-8">
+      <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row gap-8 ">
         {/* Sidebar */}
         <aside className="w-full md:w-1/4 max-w-xs mb-8 md:mb-0">
-          <div className="bg-white rounded-2xl shadow-lg p-6 sticky top-8">
+          <div className="rounded-2xl shadow-lg p-6 sticky top-8 bg-[#f3fafe]">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-bold text-gray-800">All Filters</h2>
               <div className="flex items-center gap-2">
@@ -431,6 +433,7 @@ const Services = () => {
                 )}
               </div>
             </div>
+            <div className="border-t border-gray-300 mb-4" />
             {/* Category Filter */}
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
