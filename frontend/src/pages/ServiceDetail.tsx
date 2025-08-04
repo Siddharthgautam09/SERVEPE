@@ -523,7 +523,7 @@ const ServiceDetail = () => {
 
 
               {/* Freelancer Info */}
-              <div className="bg-white rounded-2xl shadow border border-gray-100 px-8 py-6 flex items-center gap-6 max-w-3xl mx-auto">
+              <div className="bg-white rounded-2xl shadow border border-gray-100 px-8 py-6 flex items-center gap-6 max-w-3xl mx-auto mt-10">
   {/* Avatar */}
   <img
     src={service.freelancer.profilePicture}
